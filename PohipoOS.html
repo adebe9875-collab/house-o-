@@ -1,1 +1,229 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مساعد اختيار نظام التشغيل</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(160deg, #eaf2ff 0%, #cfe2ff 45%, #a9c9f5 100%);
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    color: #0b1e3a;
+    display: flex;
+    justify-content: center;
+    padding: 40px 16px;
+  }
+  .card {
+    width: 100%;
+    max-width: 560px;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(20, 60, 130, 0.18);
+    padding: 32px 30px;
+  }
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 6px;
+    color: #0b1e3a;
+  }
+  .subtitle {
+    font-size: 14px;
+    color: #33507a;
+    margin: 0 0 26px;
+  }
+  .field { margin-bottom: 18px; }
+  label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #143a6e;
+    margin-bottom: 8px;
+  }
+  select, input[type=range] {
+    width: 100%;
+    font-family: inherit;
+    font-size: 14px;
+  }
+  select {
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1.5px solid #cddffb;
+    background: #f5f9ff;
+    color: #0b1e3a;
+    outline: none;
+    transition: border-color .15s;
+  }
+  select:focus { border-color: #3b82f6; }
+  input[type=range] {
+    accent-color: #2f6fed;
+  }
+  .ram-value {
+    font-weight: 700;
+    color: #2f6fed;
+  }
+  button {
+    width: 100%;
+    margin-top: 10px;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background: #2f6fed;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .15s, transform .05s;
+  }
+  button:hover { background: #1e56d1; }
+  button:active { transform: scale(0.98); }
+  .result {
+    display: none;
+    margin-top: 22px;
+    background: #eef4ff;
+    border-radius: 14px;
+    padding: 18px 20px;
+    border-right: 5px solid #2f6fed;
+  }
+  .result-title {
+    font-size: 17px;
+    font-weight: 700;
+    margin: 0 0 8px;
+    color: #0b1e3a;
+  }
+  .result-body {
+    font-size: 14px;
+    line-height: 1.8;
+    margin: 0;
+    color: #1a2c4d;
+  }
+</style>
+</head>
+<body>
 
+<div class="card">
+  <h1>مساعد اختيار نظام التشغيل</h1>
+  <p class="subtitle">أدخل مواصفات حاسوبك ليتم اقتراح النظام الأنسب لك</p>
+
+  <div class="field">
+    <label>الرام (RAM): <span class="ram-value" id="ramOut">8</span> GB</label>
+    <input type="range" min="2" max="64" step="2" value="8" id="ram">
+  </div>
+
+  <div class="field">
+    <label>نوع الذاكرة (RAM Type)</label>
+    <select id="ramType">
+      <option value="ddr3">DDR3</option>
+      <option value="ddr4" selected>DDR4</option>
+      <option value="ddr5">DDR5</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label>نوع المعالج</label>
+    <select id="cpu">
+      <option value="1">ضعيف (Celeron / Pentium / Atom)</option>
+      <option value="2" selected>متوسط (Core i3 / Ryzen 3)</option>
+      <option value="3">جيد (Core i5 / Ryzen 5)</option>
+      <option value="4">قوي (Core i7/i9 / Ryzen 7/9 / Apple Silicon)</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label>نوع التخزين</label>
+    <select id="storage">
+      <option value="hdd">قرص صلب تقليدي (HDD)</option>
+      <option value="ssd" selected>قرص SSD</option>
+      <option value="nvme">قرص NVMe سريع</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label>الاستخدام الأساسي</label>
+    <select id="usage">
+      <option value="basic">استخدام بسيط (تصفح، مكتبية)</option>
+      <option value="gaming">ألعاب</option>
+      <option value="dev">برمجة وتطوير</option>
+      <option value="design">تصميم ومونتاج</option>
+      <option value="old">إحياء حاسوب قديم جدا</option>
+    </select>
+  </div>
+
+  <button id="go">شخّص حاسوبي</button>
+
+  <div class="result" id="result">
+    <p class="result-title" id="resultTitle"></p>
+    <p class="result-body" id="resultBody"></p>
+  </div>
+</div>
+
+<script>
+const ram = document.getElementById('ram');
+const ramOut = document.getElementById('ramOut');
+ram.addEventListener('input', () => ramOut.textContent = ram.value);
+
+document.getElementById('go').addEventListener('click', () => {
+  const ramVal = parseInt(ram.value);
+  const ramType = document.getElementById('ramType').value;
+  const cpuVal = parseInt(document.getElementById('cpu').value);
+  const storage = document.getElementById('storage').value;
+  const usage = document.getElementById('usage').value;
+
+  let title = '';
+  let body = '';
+
+  if (usage === 'old' || (ramVal <= 4 && cpuVal <= 2)) {
+    title = 'لينكس خفيف (Linux Mint XFCE / Lubuntu)';
+    body = 'مواصفاتك محدودة، وويندوز الحديث سيثقل الجهاز. توزيعة لينكس خفيفة تعطيك أداء أفضل بكثير على نفس العتاد، وهي مجانية بالكامل.';
+  } else if (usage === 'dev') {
+    if (cpuVal >= 3 && ramVal >= 8) {
+      title = 'لينكس (Ubuntu / Fedora) أو macOS إن توفر';
+      body = 'للبرمجة، لينكس يعطيك بيئة أقرب للسيرفرات وأدوات طرفية قوية بدون مشاكل. إذا حاسوبك من نوع Mac، فـ macOS خيار ممتاز أيضا لنفس السبب.';
+    } else {
+      title = 'ويندوز مع WSL';
+      body = 'مواصفاتك متوسطة، ويندوز مع تفعيل WSL يعطيك بيئة لينكس داخل ويندوز، وتحافظ على توافق البرامج العادية.';
+    }
+  } else if (usage === 'gaming') {
+    if (ramVal >= 8 && cpuVal >= 3) {
+      title = 'ويندوز 11';
+      body = 'مواصفاتك تدعم الألعاب، وويندوز يبقى الخيار الأقوى من ناحية توافق الألعاب وبرامج التعريفات (Drivers).';
+    } else {
+      title = 'ترقية العتاد أولا، ثم ويندوز';
+      body = 'الرام أو المعالج الحالي ضعيف لتشغيل أغلب الألعاب الحديثة بشكل جيد مهما كان النظام. إذا لم تستطع الترقية حاليا، ويندوز يبقى الأنسب لكن بجودة رسومات منخفضة.';
+    }
+  } else if (usage === 'design') {
+    if (ramVal >= 16 && cpuVal >= 3) {
+      title = 'macOS (إن توفر) أو ويندوز 11';
+      body = 'برامج التصميم والمونتاج الاحترافية (Adobe مثلا) تعمل بسلاسة أكبر على macOS، وإن لم يكن حاسوبك Mac فويندوز بمواصفاتك الحالية خيار جيد جدا أيضا.';
+    } else {
+      title = 'ويندوز 11 مع ترقية الرام لاحقا';
+      body = 'التصميم والمونتاج يحتاجان رام أكبر لأداء مريح. ويندوز مناسب الآن، لكن فكر في ترقية الرام إلى 16 جيغا فما فوق.';
+    }
+  } else {
+    if (ramVal <= 4 || cpuVal <= 2) {
+      title = 'لينكس خفيف (Linux Mint / Zorin OS)';
+      body = 'للاستخدام البسيط بمواصفات محدودة، لينكس أخف على الموارد من ويندوز ويعطيك تجربة أسرع وأكثر استقرارا.';
+    } else {
+      title = 'ويندوز 11';
+      body = 'مواصفاتك جيدة للاستخدام اليومي البسيط، وويندوز يبقى الخيار الأسهل من ناحية التوافق مع البرامج ودعم الأجهزة.';
+    }
+  }
+
+  if (storage === 'hdd') {
+    body += ' ملاحظة: قرصك الصلب تقليدي (HDD)، وترقيته إلى SSD ستحسّن سرعة أي نظام تختاره بشكل كبير جدا.';
+  }
+  if (ramType === 'ddr3') {
+    body += ' كما أن ذاكرتك من نوع DDR3 وهي قديمة نسبيا، وقد تحد من الترقيات المستقبلية.';
+  }
+
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultBody').textContent = body;
+  document.getElementById('result').style.display = 'block';
+});
+</script>
+
+</body>
+</html>
