@@ -14,7 +14,7 @@
             border-bottom: 1px solid #334155;
             padding: 10px 30px;
             display: flex;
-            justify-content: space-between; /* لتوزيع العناصر بين اليمين واليسار */
+            justify-content: space-between; /* لتوزيع العناصر بين أقصى اليمين وأقصى اليسار */
             align-items: center;
             position: sticky;
             top: 0;
@@ -42,7 +42,7 @@
         .header-logo {
             display: flex;
             align-items: center;
-            margin-right: auto; /* دفع الشعار إلى أقصى اليسار */
+            margin-right: auto; /* تدفع الشعار لآخر اليسار تماماً */
         }
         /* تنسيق حجم ومظهر صورة الشعار الخاصة بك */
         .header-logo img {
@@ -67,29 +67,40 @@
         .tab-btn { padding: 10px 15px; cursor: pointer; background: #334155; color: white; border: none; border-radius: 5px; font-weight: bold; transition: background 0.2s; }
         .tab-btn:hover, .tab-btn.active { background: #2563eb; }
         
-        input { width: 100%; padding: 15px; border-radius: 10px; border: 1px solid #475569; background: #0f172a; color: white; margin-bottom: 20px; box-sizing: border-box; text-align: right; }
+        /* تنسيق حقل البحث (تم إصلاح الجزء المقطوع هنا) */
+        input { 
+            width: 100%; 
+            padding: 15px; 
+            border-radius: 10px; 
+            border: 1px solid #475569; 
+            background: #0f172a; 
+            color: #ffffff; 
+            margin-bottom: 20px; 
+            box-sizing: border-box; 
+            text-align: right; 
+        }
 
-        /* شاشات الهواتف الذكية */
+        /* شاشات الهواتف الذكية للهيدر */
         @media (max-width: 600px) {
             .site-header { flex-direction: column-reverse; gap: 12px; padding: 15px; }
-            .header-logo { margin: 0 auto; } /* يتوسط الشعار في الهواتف لمظهر أفضل */
+            .header-logo { margin: 0 auto; } /* يتوسط الشعار في الهواتف لمظهر متناسق */
             .header-nav { gap: 15px; }
         }
     </style>
 </head>
 <body>
 
-<!-- الهيدر العلوي -->
+<!-- الهيدر المثبت في الأعلى -->
 <header class="site-header">
     
-    <!-- روابط التنقل يميناً -->
+    <!-- الروابط على اليمين -->
     <nav class="header-nav">
         <a href="#" class="nav-link active">الرئيسية</a>
         <a href="https://archlinux.org" target="_blank" class="nav-link">موسوعة لينكس</a>
         <a href="#" class="nav-link">اتصل بنا</a>
     </nav>
 
-    <!-- صورتك الخاصة مضافة هنا كشعار في أقصى اليسار -->
+    <!-- الشعار بالصورة المطلوبة على اليسار -->
     <a href="#" class="header-logo">
         <img src="Orange Black Online Shopping Logo (1)_4.png" alt="Store OS Logo">
     </a>
@@ -100,7 +111,7 @@
     <div class="container">
         <h2>مركز تحميل أنظمة التشغيل الرسمية</h2>
         
-        <!-- قسم الملاحظات والنصائح -->
+        <!-- قسم الملاحظات والنصائح الجديد -->
         <div class="info-box alert">
             <h4>🛡️ تنبيه للأمان والحماية</h4>
             <p>إذا أردت تنزيل نظام تشغيل <strong>أصلي ومحمي 100%</strong>، فمن فضلك اذهب دائماً إلى <strong>الموقع الرسمي</strong> المرفق بجانب كل نظام.</p>
@@ -118,6 +129,7 @@
             <button class="tab-btn active">الكل</button>
         </div>
         
+        <!-- حقل البحث -->
         <input type="text" placeholder="ابحث عن نظام التشغيل...">
     </div>
 </div>
