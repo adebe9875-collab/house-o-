@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مركز تحميل الأنظمة - تطبيق آدم</title>
+    <style>
+        /* التنسيقات العامة للموقع */
+        body { font-family: sans-serif; background: #0f172a; color: #f8fafc; padding: 0; margin: 0; text-align: center; }
+        
+        /* --- تصميم الهيدر (Header) المثبت في الأعلى --- */
+        .site-header {
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            padding: 10px 30px;
+            display: flex;
+            justify-content: space-between; /* لتوزيع العناصر بين اليمين واليسار */
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* روابط التنقل (تلقائياً على اليمين في نظام RTL) */
+        .header-nav {
+            display: flex;
+            gap: 20px;
+        }
+        .nav-link {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #f8fafc;
+        }
+
+        /* حاوية الشعار (مُجبرة على البقاء في أقصى اليسار) */
+        .header-logo {
+            display: flex;
+            align-items: center;
+            margin-right: auto; /* دفع الشعار إلى أقصى اليسار */
+        }
+        /* تنسيق حجم ومظهر صورة الشعار الخاصة بك */
+        .header-logo img {
+            height: 60px; /* يمكنك تعديل الارتفاع حسب رغبتك */
+            width: auto;
+            display: block;
+        }
+
+        /* حاوية المحتوى الرئيسي */
+        .main-content { padding: 30px 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: #1e293b; padding: 20px; border-radius: 15px; border: 1px solid #334155; }
+        
+        /* تصميم صندوق الملاحظات */
+        .info-box { background: #1e293b; border-right: 5px solid #2563eb; padding: 15px; text-align: right; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .info-box.alert { border-right-color: #f59e0b; }
+        .info-box h4 { margin-top: 0; color: #f59e0b; font-size: 1.1rem; }
+        .info-box p { margin: 5px 0; font-size: 0.95rem; line-height: 1.6; }
+        .info-box ul { margin: 5px 0; padding-right: 20px; font-size: 0.95rem; }
+        
+        /* أزرار التبويبات والبحث */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; flex-wrap: wrap; }
+        .tab-btn { padding: 10px 15px; cursor: pointer; background: #334155; color: white; border: none; border-radius: 5px; font-weight: bold; transition: background 0.2s; }
+        .tab-btn:hover, .tab-btn.active { background: #2563eb; }
+        
+        input { width: 100%; padding: 15px; border-radius: 10px; border: 1px solid #475569; background: #0f172a; color: white; margin-bottom: 20px; box-sizing: border-box; text-align: right; }
+
+        /* شاشات الهواتف الذكية */
+        @media (max-width: 600px) {
+            .site-header { flex-direction: column-reverse; gap: 12px; padding: 15px; }
+            .header-logo { margin: 0 auto; } /* يتوسط الشعار في الهواتف لمظهر أفضل */
+            .header-nav { gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- الهيدر العلوي -->
+<header class="site-header">
+    
+    <!-- روابط التنقل يميناً -->
+    <nav class="header-nav">
+        <a href="#" class="nav-link active">الرئيسية</a>
+        <a href="https://archlinux.org" target="_blank" class="nav-link">موسوعة لينكس</a>
+        <a href="#" class="nav-link">اتصل بنا</a>
+    </nav>
+
+    <!-- صورتك الخاصة مضافة هنا كشعار في أقصى اليسار -->
+    <a href="#" class="header-logo">
+        <img src="Orange Black Online Shopping Logo (1)_4.png" alt="Store OS Logo">
+    </a>
+
+</header>
+
+<div class="main-content">
+    <div class="container">
+        <h2>مركز تحميل أنظمة التشغيل الرسمية</h2>
+        
+        <!-- قسم الملاحظات والنصائح -->
+        <div class="info-box alert">
+            <h4>🛡️ تنبيه للأمان والحماية</h4>
+            <p>إذا أردت تنزيل نظام تشغيل <strong>أصلي ومحمي 100%</strong>، فمن فضلك اذهب دائماً إلى <strong>الموقع الرسمي</strong> المرفق بجانب كل نظام.</p>
+        </div>
+
+        <div class="info-box">
+            <h4>💿 نصيحة لحرق الأنظمة على الفلاشة (USB)</h4>
+            <ul>
+                <li>إذا كنت تستخدم نظام <strong>الويندوز (Windows)</strong>: للحرق استخدم برنامج <strong>Rufus</strong> أو <strong>Ventoy</strong>.</li>
+                <li>إذا كنت تستخدم نظام <strong>اللينكس (Linux)</strong>: أفضل شيء للحرق هو <strong>Ventoy</strong>.</li>
+            </ul>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab-btn active">الكل</button>
+        </div>
+        
+        <input type="text" placeholder="ابحث عن نظام التشغيل...">
+    </div>
+</div>
+
+</body>
+</html>
