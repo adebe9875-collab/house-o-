@@ -8,21 +8,31 @@
         /* التنسيقات العامة للموقع */
         body { font-family: sans-serif; background: #0f172a; color: #f8fafc; padding: 0; margin: 0; text-align: center; }
         
-        /* --- تصميم الهيدر (Header) المثبت في الأعلى --- */
+        /* --- تصميم الهيدر (Header) الجديد --- */
         .site-header {
             background: #1e293b;
             border-bottom: 1px solid #334155;
-            padding: 10px 30px;
+            padding: 15px 30px;
             display: flex;
-            justify-content: space-between; /* لتوزيع العناصر بين أقصى اليمين وأقصى اليسار */
+            justify-content: space-between;
             align-items: center;
             position: sticky;
             top: 0;
             z-index: 1000;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        
-        /* روابط التنقل (على اليمين) */
+        .header-logo {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #2563eb;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .header-logo span {
+            color: #f59e0b;
+        }
         .header-nav {
             display: flex;
             gap: 20px;
@@ -36,89 +46,6 @@
         }
         .nav-link:hover, .nav-link.active {
             color: #f8fafc;
-        }
-
-        /* حاوية الشعار المصنوع من CSS (على اليسار) */
-        .header-logo-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-            margin-right: auto; /* تدفع الشعار لآخر اليسار تماماً */
-        }
-
-        /* 1. أيقونة العربة والأنظمة المصنوعة من CSS */
-        .css-cart-icon {
-            position: relative;
-            width: 48px;
-            height: 48px;
-        }
-        /* عربة التسوق */
-        .css-cart {
-            position: absolute;
-            bottom: 4px;
-            left: 4px;
-            width: 32px;
-            height: 24px;
-            background-color: #f97316; /* لون برتقالي للعربة */
-            border-radius: 4px;
-        }
-        /* عجلات العربة */
-        .css-cart::after, .css-cart::before {
-            content: '';
-            position: absolute;
-            bottom: -6px;
-            width: 8px;
-            height: 8px;
-            background-color: #f97316;
-            border-radius: 50%;
-        }
-        .css-cart::after { left: 4px; }
-        .css-cart::before { right: 4px; }
-        
-        /* شعار نظام تجريدي 1 (Ubuntu-like) */
-        .css-os-icon-1 {
-            position: absolute;
-            top: 2px;
-            left: 10px;
-            width: 16px;
-            height: 16px;
-            background-color: #c2410c; /* أحمر داكن */
-            border-radius: 50%;
-            border: 2px solid white;
-            z-index: 2;
-        }
-        /* شعار نظام تجريدي 2 (Windows-like) */
-        .css-os-icon-2 {
-            position: absolute;
-            top: 0px;
-            left: 20px;
-            width: 18px;
-            height: 18px;
-            background-color: #0284c7; /* أزرق */
-            border-radius: 2px;
-            border: 2px solid white;
-            z-index: 1;
-        }
-
-        /* 2. نص الشعار */
-        .header-logo-text {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            line-height: 1.1;
-        }
-        .logo-main-text {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #f8fafc;
-        }
-        .logo-main-text span {
-            color: #f97316; /* كلمة "OS" بالبرتقالي */
-        }
-        .logo-sub-text {
-            font-size: 0.8rem;
-            color: #94a3b8;
         }
 
         /* حاوية المحتوى الرئيسي */
@@ -138,49 +65,36 @@
         .tab-btn:hover, .tab-btn.active { background: #2563eb; }
         
         input { width: 100%; padding: 15px; border-radius: 10px; border: 1px solid #475569; background: #0f172a; color: white; margin-bottom: 20px; box-sizing: border-box; text-align: right; }
+        .os-group { text-align: right; margin-top: 20px; }
+        .letter-header { color: #f59e0b; border-bottom: 2px solid #334155; padding-bottom: 5px; margin-bottom: 10px; }
+        .os-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #1e293b; border-bottom: 1px solid #334155; }
+        .btn { background: #2563eb; padding: 6px 18px; border-radius: 5px; text-decoration: none; color: white; font-size: 0.9rem; font-weight: bold; transition: background 0.2s; }
+        .btn:hover { background: #1d4ed8; }
 
-        /* شاشات الهواتف الذكية */
+        /* شاشات الهواتف الذكية للهيدر */
         @media (max-width: 600px) {
-            .site-header { flex-direction: column-reverse; gap: 12px; padding: 15px; }
-            .header-logo-container { margin: 0 auto; } /* يتوسط في الهواتف */
+            .site-header { flex-direction: column; gap: 10px; padding: 15px; }
             .header-nav { gap: 15px; }
         }
     </style>
 </head>
 <body>
 
-<!-- الهيدر العلوي -->
+<!-- الهيدر الجديد والمحاذاة التلقائية -->
 <header class="site-header">
-    
-    <!-- الروابط تظهر يميناً (لأن الصفحة RTL) -->
+    <a href="#" class="header-logo">📱 تطبيق <span>آدم</span></a>
     <nav class="header-nav">
         <a href="#" class="nav-link active">الرئيسية</a>
         <a href="https://archlinux.org" target="_blank" class="nav-link">موسوعة لينكس</a>
         <a href="#" class="nav-link">اتصل بنا</a>
     </nav>
-
-    <!-- الشعار المصنوع من CSS يظهر يساراً في أعلى الشاشة -->
-    <a href="#" class="header-logo-container">
-        <!-- الأيقونة التجريدية المصنوعة من CSS -->
-        <div class="css-cart-icon">
-            <div class="css-os-icon-1"></div>
-            <div class="css-os-icon-2"></div>
-            <div class="css-cart"></div>
-        </div>
-        <!-- نص الشعار -->
-        <div class="header-logo-text">
-            <span class="logo-main-text">store <span>OS</span></span>
-            <span class="logo-sub-text">store house OS</span>
-        </div>
-    </a>
-
 </header>
 
 <div class="main-content">
     <div class="container">
         <h2>مركز تحميل أنظمة التشغيل الرسمية</h2>
         
-        <!-- قسم الملاحظات والنصائح -->
+        <!-- قسم الملاحظات والنصائح الجديد -->
         <div class="info-box alert">
             <h4>🛡️ تنبيه للأمان والحماية</h4>
             <p>إذا أردت تنزيل نظام تشغيل <strong>أصلي ومحمي 100%</strong>، فمن فضلك اذهب دائماً إلى <strong>الموقع الرسمي</strong> المرفق بجانب كل نظام.</p>
@@ -195,12 +109,309 @@
         </div>
         
         <div class="tabs">
-            <button class="tab-btn active">الكل</button>
+            <button class="tab-btn active" onclick="filterOS('all', this)">الكل</button>
+            <button class="tab-btn" onclick="filterOS('windows', this)">Windows</button>
+            <button class="tab-btn" onclick="filterOS('linux', this)">Linux</button>
+            <button class="tab-btn" onclick="filterOS('bsd', this)">BSD</button>
+            <button class="tab-btn" onclick="filterOS('unix', this)">Unix / DOS</button>
         </div>
-        
-        <input type="text" placeholder="ابحث عن نظام التشغيل...">
+
+        <input type="text" id="search" placeholder="ابحث عن نظام تشغيل..." onkeyup="searchOS()">
+
+        <div id="list">
+            <!-- حرف A -->
+            <div class="os-group" data-letter="A">
+                <h3 class="letter-header">حرف A</h3>
+                <div class="os-item" data-type="linux" data-name="arch linux">Arch Linux <a href="https://archlinux.org/download/" target="_blank" class="btn">Download</a></div>
+            </div>
+
+            <!-- حرف D -->
+            <div class="os-group" data-letter="D">
+                <h3 class="letter-header">حرف D</h3>
+                <div class="os-item" data-type="linux" data-name="debian">Debian Linux <a href="https://www.debian.org/distrib/" target="_blank" class="btn">Download</a></div>
+                <div class="os-item" data-type="bsd" data-name="dragonfly bsd">DragonFly BSD (نظام التنين) <a href="https://www.dragonflybsd.org/download/" target="_blank" class="btn">Download</a></div>
+            </div>
+
+            <!-- حرف F -->
+            <div class="os-group" data-letter="F">
+                <h3 class="letter-header">حرف F</h3>
+                <div class="os-item" data-type="bsd" data-name="freebsd">FreeBSD (قوي وعالي الأداء) <a href="https://www.freebsd.org/where/" target="_blank" class="btn">Download</a></div>
+                <div class="os-item" data-type="unix" data-name="freedos">FreeDOS (النظام المفتوح) <a href="https://www.freedos.org/download/" target="_blank" class="btn">Download</a></div>
+            </div>
+
+            <!-- حرف L -->
+            <div class="os-group" data-letter="L">
+                <h3 class="letter-header">حرف L</h3>
+                <div class="os-item" data-type="linux" data-name="linux mint">Linux Mint <a href="https://linuxmint.com/download.php" target="_blank" class="btn">Download</a></div>
+            </div>
+            
+            <!-- حرف W -->
+            <div class="os-group" data-letter="W">
+                <h3 class="letter-header">حرف W</h3>
+                <div class="os-item" data-type="windows" data-name="windows 11">Windows 11 <a href="https://www.microsoft.com/software-download/windows11" target="_blank" class="btn">Download</a></div>
+                <div class="os-item" data-type="windows" data-name="windows 10">Windows 10 <a href="https://www.microsoft.com/software-download/windows10" target="_blank" class="btn">Download</a></div>
+            </div>
+        </div>
     </div>
 </div>
+
+<script>
+    let currentFilter = 'all';
+
+    // دالة الفلترة عبر الأزرار
+    function filterOS(type, btn) {
+        currentFilter = type;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        updateList();
+    }
+
+    // دالة البحث
+    function searchOS() {
+        updateList();
+    }
+
+    // تحديث القائمة بناء على الفلتر والبحث
+    function updateList() {
+        const query = document.getElementById('search').value.toLowerCase().trim();
+        const groups = document.querySelectorAll('.os-group');
+
+        groups.forEach(group => {
+            const items = group.querySelectorAll('.os-item');
+            let visibleItemsInGroup = 0;
+
+            items.forEach(item => {
+                const itemType = item.getAttribute('data-type');
+                const itemName = item.getAttribute('data-name');
+                
+                const matchesFilter = (currentFilter === 'all' || itemType === currentFilter);
+                const matchesSearch = itemName.includes(query);
+
+                if (matchesFilter && matchesSearch) {
+                    item.style.display = 'flex';
+                    visibleItemsInGroup++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // إخفاء الحرف إذا لم تكن هناك نتائج ظاهرة تحته
+            if (visibleItemsInGroup > 0) {
+                group.style.display = 'block';
+            } else {
+                group.style.display = 'none';
+            }
+        });
+    }
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مركز تحميل الأنظمة - تطبيق آدم</title>
+    <style>
+        /* التنسيقات العامة للموقع */
+        body { font-family: sans-serif; background: #0f172a; color: #f8fafc; padding: 0; margin: 0; text-align: center; }
+        
+        /* --- تصميم الهيدر (Header) الجديد --- */
+        .site-header {
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header-logo {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #2563eb;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .header-logo span {
+            color: #f59e0b;
+        }
+        .header-nav {
+            display: flex;
+            gap: 20px;
+        }
+        .nav-link {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #f8fafc;
+        }
+
+        /* حاوية المحتوى الرئيسي */
+        .main-content { padding: 30px 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: #1e293b; padding: 20px; border-radius: 15px; border: 1px solid #334155; }
+        
+        /* تصميم صندوق الملاحظات */
+        .info-box { background: #1e293b; border-right: 5px solid #2563eb; padding: 15px; text-align: right; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .info-box.alert { border-right-color: #f59e0b; }
+        .info-box h4 { margin-top: 0; color: #f59e0b; font-size: 1.1rem; }
+        .info-box p { margin: 5px 0; font-size: 0.95rem; line-height: 1.6; }
+        .info-box ul { margin: 5px 0; padding-right: 20px; font-size: 0.95rem; }
+        
+        /* أزرار التبويبات والبحث */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; flex-wrap: wrap; }
+        .tab-btn { padding: 10px 15px; cursor: pointer; background: #334155; color: white; border: none; border-radius: 5px; font-weight: bold; transition: background 0.2s; }
+        .tab-btn:hover, .tab-btn.active { background: #2563eb; }
+        
+        input { width: 100%; padding: 15px; border-radius: 10px; border: 1px solid #475569; background: #0f172a; color: white; margin-bottom: 20px; box-sizing: border-box; text-align: right; }
+        .os-group { text-align: right; margin-top: 20px; }
+        .letter-header { color: #f59e0b; border-bottom: 2px solid #334155; padding-bottom: 5px; margin-bottom: 10px; }
+        .os-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #1e293b; border-bottom: 1px solid #334155; }
+        .btn { background: #2563eb; padding: 6px 18px; border-radius: 5px; text-decoration: none; color: white; font-size: 0.9rem; font-weight: bold; transition: background 0.2s; }
+        .btn:hover { background: #1d4ed8; }
+
+        /* شاشات الهواتف الذكية للهيدر */
+        @media (max-width: 600px) {
+            .site-header { flex-direction: column; gap: 10px; padding: 15px; }
+            .header-nav { gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- الهيدر الجديد والمحاذاة التلقائية -->
+<header class="site-header">
+    <a href="#" class="header-logo">📱 تطبيق <span>آدم</span></a>
+    <nav class="header-nav">
+        <a href="#" class="nav-link active">الرئيسية</a>
+        <a href="https://archlinux.org" target="_blank" class="nav-link">موسوعة لينكس</a>
+        <a href="#" class="nav-link">اتصل بنا</a>
+    </nav>
+</header>
+
+<div class="main-content">
+    <div class="container">
+        <h2>مركز تحميل أنظمة التشغيل الرسمية</h2>
+        
+        <!-- قسم الملاحظات والنصائح الجديد -->
+        <div class="info-box alert">
+            <h4>🛡️ تنبيه للأمان والحماية</h4>
+            <p>إذا أردت تنزيل نظام تشغيل <strong>أصلي ومحمي 100%</strong>، فمن فضلك اذهب دائماً إلى <strong>الموقع الرسمي</strong> المرفق بجانب كل نظام.</p>
+        </div>
+
+        <div class="info-box">
+            <h4>💿 نصيحة لحرق الأنظمة على الفلاشة (USB)</h4>
+            <ul>
+                <li>إذا كنت تستخدم نظام <strong>الويندوز (Windows)</strong>: للحرق استخدم برنامج <strong>Rufus</strong> أو <strong>Ventoy</strong>.</li>
+                <li>إذا كنت تستخدم نظام <strong>اللينكس (Linux)</strong>: أفضل شيء للحرق هو <strong>Ventoy</strong>.</li>
+            </ul>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="filterOS('all', this)">الكل</button>
+            <button class="tab-btn" onclick="filterOS('windows', this)">Windows</button>
+            <button class="tab-btn" onclick="filterOS('linux', this)">Linux</button>
+            <button class="tab-btn" onclick="filterOS('bsd', this)">BSD</button>
+            <button class="tab-btn" onclick="filterOS('unix', this)">Unix / DOS</button>
+        </div>
+
+        <input type="text" id="search" placeholder="ابحث عن نظام تشغيل..." onkeyup="searchOS()">
+
+        <div id="list">
+            <!-- حرف A -->
+            <div class="os-group" data-letter="A">
+                <h3 class="letter-header">حرف A</h3>
+                <div class="os-item" data-type="linux" data-name="arch linux">Arch Linux <a href="https://archlinux.org/download/" target="_blank" class="btn">Download</a></div>
+            </div>
+
+            <!-- حرف D -->
+            <div class="os-group" data-letter="D">
+                <h3 class="letter-header">حرف D</h3>
+                <div class="os-item" data-type="linux" data-name="debian">Debian Linux <a href="https://www.debian.org/distrib/" target="_blank" class="btn">Download</a></div>
+                <div class="os-item" data-type="bsd" data-name="dragonfly bsd">DragonFly BSD (نظام التنين) <a href="https://www.dragonflybsd.org/download/" target="_blank" class="btn">Download</a></div>
+            </div>
+
+            <!-- حرف F -->
+            <div class="os-group" data-letter="F">
+                <h3 class="letter-header">حرف F</h3>
+                <div class="os-item" data-type="bsd" data-name="freebsd">FreeBSD (قوي وعالي الأداء) <a href="https://www.freebsd.org/where/" target="_blank" class="btn">Download</a></div>
+                <div class="os-item" data-type="unix" data-name="freedos">FreeDOS (النظام المفتوح) <a href="https://www.freedos.org/download/" target="_blank" class="btn">Download</a></div>
+            </div>
+
+            <!-- حرف L -->
+            <div class="os-group" data-letter="L">
+                <h3 class="letter-header">حرف L</h3>
+                <div class="os-item" data-type="linux" data-name="linux mint">Linux Mint <a href="https://linuxmint.com/download.php" target="_blank" class="btn">Download</a></div>
+            </div>
+            
+            <!-- حرف W -->
+            <div class="os-group" data-letter="W">
+                <h3 class="letter-header">حرف W</h3>
+                <div class="os-item" data-type="windows" data-name="windows 11">Windows 11 <a href="https://www.microsoft.com/software-download/windows11" target="_blank" class="btn">Download</a></div>
+                <div class="os-item" data-type="windows" data-name="windows 10">Windows 10 <a href="https://www.microsoft.com/software-download/windows10" target="_blank" class="btn">Download</a></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentFilter = 'all';
+
+    // دالة الفلترة عبر الأزرار
+    function filterOS(type, btn) {
+        currentFilter = type;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        updateList();
+    }
+
+    // دالة البحث
+    function searchOS() {
+        updateList();
+    }
+
+    // تحديث القائمة بناء على الفلتر والبحث
+    function updateList() {
+        const query = document.getElementById('search').value.toLowerCase().trim();
+        const groups = document.querySelectorAll('.os-group');
+
+        groups.forEach(group => {
+            const items = group.querySelectorAll('.os-item');
+            let visibleItemsInGroup = 0;
+
+            items.forEach(item => {
+                const itemType = item.getAttribute('data-type');
+                const itemName = item.getAttribute('data-name');
+                
+                const matchesFilter = (currentFilter === 'all' || itemType === currentFilter);
+                const matchesSearch = itemName.includes(query);
+
+                if (matchesFilter && matchesSearch) {
+                    item.style.display = 'flex';
+                    visibleItemsInGroup++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // إخفاء الحرف إذا لم تكن هناك نتائج ظاهرة تحته
+            if (visibleItemsInGroup > 0) {
+                group.style.display = 'block';
+            } else {
+                group.style.display = 'none';
+            }
+        });
+    }
+</script>
 
 </body>
 </html>
