@@ -125,6 +125,8 @@
     <button class="nav-link" onclick="showView('diag', this)">مشخص الحاسوب</button>
     <button class="nav-link active" onclick="showView('download', this)">مركز التحميل</button>
     <button class="nav-link" onclick="showView('compare', this)">مقارنة الأنظمة</button>
+    <button class="nav-link" onclick="showView('source', this)">الكود المصدري</button>
+    <button class="nav-link" onclick="showView('verify', this)">التحقق من سلامة الأيزو</button>
   </nav>
 </header>
 
@@ -383,6 +385,38 @@
         <input type="text" id="chatInput" placeholder="اكتب أو اضغط المايك للتحدث..." style="flex:1; padding:12px; border-radius:10px; border:1px solid #475569; background:#0f172a; color:#f8fafc; text-align:right;">
         <button class="action-btn" id="chatSend" style="width:auto; padding:12px 22px; margin-top:0;">إرسال</button>
       </div>
+    </div>
+
+    <!-- الواجهة الرابعة: الكود المصدري -->
+    <div class="view" id="view-source">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <h2 style="margin:0;">houseOS — الكود المصدري</h2>
+        <button id="downloadSourceBtn" class="action-btn" style="width:auto; margin-top:0; padding:10px 20px;" onclick="downloadSourceCode()">تحميل الملف</button>
+      </div>
+      <p style="text-align:right; color:#94a3b8; font-size:13px; margin-top:-6px;">هذا التطبيق مفتوح المصدر بالكامل. بعد ما تحمّل الملف، قارن بصمة SHA256 اللي عندك بالبصمة الظاهرة تحت للتأكد إن الملف ما تغيّر:</p>
+      <div style="background:#0f172a; border-radius:10px; padding:10px 14px; margin-bottom:14px; direction:ltr; text-align:left; font-size:12px; color:#f59e0b; word-break:break-all;">
+        SHA256: <span id="sha256Value">جارٍ الحساب...</span>
+      </div>
+      <pre id="sourceCodeBox" style="background:#0f172a; border-radius:10px; padding:16px; max-height:380px; overflow:auto; direction:ltr; text-align:left; font-size:11px; line-height:1.6; color:#94a3b8; white-space:pre-wrap; word-break:break-word;"></pre>
+    </div>
+
+    <!-- الواجهة الخامسة: التحقق من سلامة الأيزو -->
+    <div class="view" id="view-verify">
+      <h2>مركز التحقق من سلامة ملفات الأنظمة (ISO)</h2>
+      <p style="text-align:right; color:#94a3b8; font-size:13px; margin-top:-10px;">اختر ملف الأيزو اللي حمّلته من "مركز التحميل"، وقارن بصمته مع البصمة الرسمية المنشورة في موقع النظام نفسه.</p>
+
+      <input type="file" id="isoFileInput" style="width:100%; padding:12px; border-radius:10px; border:1px solid #475569; background:#0f172a; color:#f8fafc; margin-bottom:14px;">
+
+      <div style="background:#0f172a; border-radius:10px; padding:12px 14px; margin-bottom:14px; direction:ltr; text-align:left; font-size:12px; color:#f59e0b; word-break:break-all; min-height:20px;">
+        <span id="isoStatus">اختر ملفاً لحساب بصمته...</span>
+      </div>
+
+      <div class="field">
+        <label>الصق البصمة الرسمية هنا للمقارنة (اختياري):</label>
+        <input type="text" id="officialHashInput" placeholder="official SHA256 hash" style="width:100%; padding:10px; border-radius:8px; border:1px solid #475569; background:#0f172a; color:#f8fafc; direction:ltr; text-align:left; font-size:12px;" oninput="compareHashes()">
+      </div>
+
+      <div id="matchResult" style="text-align:right; font-size:14px; font-weight:600; margin-top:6px;"></div>
     </div>
 
   </div>
@@ -692,6 +726,71 @@ if (SpeechRecognitionAPI) {
   micBtn.addEventListener('click', () => {
     addChatBubble('متصفحك لا يدعم التعرف على الصوت، جرّب المتصفح على جوجل كروم.', false);
   });
+}
+
+/* ===== عرض الكود المصدري، حساب SHA256، وتحميل الملف ===== */
+const fullSourceCode = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+document.getElementById('sourceCodeBox').textContent = fullSourceCode;
+
+async function computeSHA256(text) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(text);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+computeSHA256(fullSourceCode).then(hash => {
+  document.getElementById('sha256Value').textContent = hash;
+}).catch(() => {
+  document.getElementById('sha256Value').textContent = 'تعذر حساب البصمة في هذا المتصفح';
+});
+
+function downloadSourceCode() {
+  const blob = new Blob([fullSourceCode], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'houseOS.html';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ===== التحقق من سلامة ملفات الأنظمة (ISO) ===== */
+let computedIsoHash = '';
+
+document.getElementById('isoFileInput').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  const statusEl = document.getElementById('isoStatus');
+  if (!file) { statusEl.textContent = 'اختر ملفاً لحساب بصمته...'; return; }
+
+  statusEl.textContent = `جارٍ حساب بصمة "${file.name}" (${(file.size / (1024*1024)).toFixed(1)} MB)... قد يستغرق هذا وقتاً لملفات الأيزو الكبيرة.`;
+  document.getElementById('matchResult').textContent = '';
+
+  try {
+    const buffer = await file.arrayBuffer();
+    const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    computedIsoHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    statusEl.textContent = 'SHA256: ' + computedIsoHash;
+    compareHashes();
+  } catch (err) {
+    statusEl.textContent = 'تعذر حساب البصمة — الملف كبير جداً أو المتصفح لا يدعم هذه العملية.';
+  }
+});
+
+function compareHashes() {
+  const official = document.getElementById('officialHashInput').value.trim().toLowerCase();
+  const resultEl = document.getElementById('matchResult');
+  if (!official || !computedIsoHash) { resultEl.textContent = ''; return; }
+
+  if (official === computedIsoHash) {
+    resultEl.textContent = '✅ متطابقة — الملف سليم وأصلي.';
+    resultEl.style.color = '#22c55e';
+  } else {
+    resultEl.textContent = '❌ غير متطابقة — الملف قد يكون تالفاً أو معدَّلاً، لا تستخدمه.';
+    resultEl.style.color = '#ef4444';
+  }
 }
 </script>
 
