@@ -1,1 +1,497 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALphoenixa OS</title>
+<style>
+  * { box-sizing: border-box; user-select: none; }
+  html, body {
+    margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+  }
 
+  /* ===== شاشة الإقلاع ===== */
+  #bootScreen {
+    position: fixed; inset: 0; background: #0b0f1a; color: #fff;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 9999; transition: opacity .6s ease;
+  }
+  #bootLogo {
+    font-size: 2.4rem; font-weight: 800; letter-spacing: 1px;
+    background: linear-gradient(90deg, #ff7a30, #ff3d81);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    margin-bottom: 30px;
+  }
+  #bootBarTrack { width: 260px; height: 6px; background: #1e293b; border-radius: 10px; overflow: hidden; }
+  #bootBarFill { width: 0%; height: 100%; background: linear-gradient(90deg, #ff7a30, #ff3d81); border-radius: 10px; transition: width .2s linear; }
+  #bootLabel { margin-top: 14px; font-size: 12px; color: #94a3b8; }
+
+  /* ===== سطح المكتب ===== */
+  #desktop {
+    position: fixed; inset: 0;
+    background: radial-gradient(circle at 30% 20%, #2b1055, #0b0f1a 70%);
+    display: none; overflow: hidden;
+  }
+
+  .desktop-icon {
+    position: absolute; width: 84px; text-align: center; color: #fff;
+    cursor: pointer; padding: 8px 4px; border-radius: 8px; font-size: 12px;
+  }
+  .desktop-icon:hover { background: rgba(255,255,255,0.08); }
+  .desktop-icon .icon-glyph {
+    width: 46px; height: 46px; margin: 0 auto 6px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; font-size: 22px;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.35);
+  }
+
+  /* ===== النوافذ ===== */
+  .app-window {
+    position: absolute; min-width: 300px; min-height: 200px;
+    background: #161b2c; border-radius: 12px; overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid #2a3350;
+    display: flex; flex-direction: column;
+  }
+  .window-titlebar {
+    background: #1f2740; padding: 10px 14px; display: flex; align-items: center;
+    justify-content: space-between; cursor: move; color: #e2e8f0; font-size: 13px; font-weight: 600;
+  }
+  .window-controls { display: flex; gap: 8px; }
+  .win-btn {
+    width: 14px; height: 14px; border-radius: 50%; border: none; cursor: pointer;
+  }
+  .win-close { background: #ef4444; }
+  .win-min { background: #f59e0b; }
+  .window-body {
+    flex: 1; padding: 16px; color: #e2e8f0; font-size: 13px; overflow-y: auto; text-align: right;
+  }
+
+  /* ===== شريط المهام ===== */
+  #taskbar {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 54px;
+    background: rgba(15,20,35,0.85); backdrop-filter: blur(10px);
+    display: flex; align-items: center; padding: 0 14px; gap: 10px;
+    border-top: 1px solid #2a3350; z-index: 500;
+  }
+  #startBtn {
+    background: linear-gradient(135deg, #ff7a30, #ff3d81); border: none; color: #fff;
+    font-weight: 700; padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 13px;
+  }
+  #taskbarApps { display: flex; gap: 6px; flex: 1; }
+  .taskbar-app {
+    background: #1f2740; color: #cbd5e1; border: none; padding: 6px 12px; border-radius: 6px;
+    font-size: 12px; cursor: pointer;
+  }
+  #clock { color: #cbd5e1; font-size: 13px; direction: ltr; }
+
+  /* ===== قائمة ابدأ ===== */
+  #startMenu {
+    position: absolute; bottom: 60px; right: 14px; width: 240px;
+    background: #161b2c; border: 1px solid #2a3350; border-radius: 12px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5); display: none; z-index: 600; overflow: hidden;
+  }
+  #startMenu .sm-header {
+    padding: 14px; background: linear-gradient(135deg, #ff7a30, #ff3d81);
+    color: #fff; font-weight: 700; font-size: 14px;
+  }
+  .sm-item {
+    padding: 12px 14px; color: #e2e8f0; font-size: 13px; cursor: pointer;
+    display: flex; align-items: center; gap: 10px; border-top: 1px solid #232b45;
+  }
+  .sm-item:hover { background: #1f2740; }
+
+  /* ===== قائمة الكليك اليمين ===== */
+  #contextMenu {
+    position: absolute; width: 200px; background: #161b2c; border: 1px solid #2a3350;
+    border-radius: 10px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); display: none; z-index: 700; overflow: hidden;
+  }
+  .ctx-item {
+    padding: 10px 14px; color: #e2e8f0; font-size: 13px; cursor: pointer;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .ctx-item:hover { background: #1f2740; }
+  .ctx-sep { height: 1px; background: #232b45; margin: 4px 0; }
+</style>
+</head>
+<body>
+
+<!-- شاشة الإقلاع -->
+<div id="bootScreen">
+  <div id="bootLogo">ALphoenixa OS</div>
+  <div id="bootBarTrack"><div id="bootBarFill"></div></div>
+  <div id="bootLabel">جارٍ تحميل النظام...</div>
+</div>
+
+<!-- سطح المكتب -->
+<div id="desktop">
+
+  <div class="desktop-icon" style="top:20px; right:20px;" onclick="openWindow('about')">
+    <div class="icon-glyph" style="background:linear-gradient(135deg,#ff7a30,#ff3d81);">🔥</div>
+    عن النظام
+  </div>
+
+  <div class="desktop-icon" style="top:120px; right:20px;" onclick="openWindow('terminal')">
+    <div class="icon-glyph" style="background:#0f172a; border:1px solid #334155;">📟</div>
+    الطرفية
+  </div>
+
+  <div class="desktop-icon" style="top:220px; right:20px;" onclick="openWindow('files')">
+    <div class="icon-glyph" style="background:#2563eb;">🗂️</div>
+    الملفات
+  </div>
+
+  <div class="desktop-icon" style="top:320px; right:20px;" onclick="openWindow('settings')">
+    <div class="icon-glyph" style="background:#475569;">⚙️</div>
+    الإعدادات
+  </div>
+
+  <div class="desktop-icon" style="top:420px; right:20px;" onclick="openWindow('browser')">
+    <div class="icon-glyph" style="background:#16a34a;">🌐</div>
+    المتصفح
+  </div>
+
+  <!-- شريط المهام -->
+  <div id="taskbar">
+    <button id="startBtn" onclick="toggleStartMenu()">ابدأ</button>
+    <div id="taskbarApps"></div>
+    <div id="clock">00:00</div>
+  </div>
+
+  <!-- قائمة ابدأ -->
+  <div id="startMenu">
+    <div class="sm-header">ALphoenixa OS</div>
+    <div class="sm-item" onclick="openWindow('about'); toggleStartMenu()">🔥 عن النظام</div>
+    <div class="sm-item" onclick="openWindow('terminal'); toggleStartMenu()">📟 الطرفية</div>
+    <div class="sm-item" onclick="openWindow('files'); toggleStartMenu()">🗂️ الملفات</div>
+    <div class="sm-item" onclick="openWindow('settings'); toggleStartMenu()">⚙️ الإعدادات</div>
+    <div class="sm-item" onclick="openWindow('browser'); toggleStartMenu()">🌐 المتصفح</div>
+  </div>
+
+  <!-- قائمة الكليك اليمين -->
+  <div id="contextMenu">
+    <div class="ctx-item" onclick="randomWallpaper(); hideContextMenu()">🎨 تبديل الخلفية</div>
+    <div class="ctx-item" onclick="openWindow('terminal'); hideContextMenu()">📟 فتح الطرفية هنا</div>
+    <div class="ctx-item" onclick="openWindow('settings'); hideContextMenu()">⚙️ الإعدادات</div>
+    <div class="ctx-sep"></div>
+    <div class="ctx-item" onclick="refreshDesktop(); hideContextMenu()">🔄 تحديث سطح المكتب</div>
+  </div>
+
+</div>
+
+<script>
+/* ===== محاكاة الإقلاع ===== */
+let progress = 0;
+const fill = document.getElementById('bootBarFill');
+const label = document.getElementById('bootLabel');
+const messages = ['جارٍ تحميل النواة...', 'جارٍ تهيئة الذاكرة...', 'جارٍ تحميل واجهة سطح المكتب...', 'على وشك الانتهاء...'];
+
+const bootInterval = setInterval(() => {
+  progress += Math.random() * 18 + 8;
+  if (progress >= 100) {
+    progress = 100;
+    clearInterval(bootInterval);
+    setTimeout(() => {
+      document.getElementById('bootScreen').style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('bootScreen').style.display = 'none';
+        document.getElementById('desktop').style.display = 'block';
+        startClock();
+        restoreOpenWindows();
+      }, 600);
+    }, 400);
+  }
+  fill.style.width = progress + '%';
+  label.textContent = messages[Math.min(Math.floor(progress / 26), messages.length - 1)];
+}, 350);
+
+/* ===== الساعة ===== */
+function startClock() {
+  const clockEl = document.getElementById('clock');
+  function tick() {
+    const now = new Date();
+    clockEl.textContent = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+  }
+  tick();
+  setInterval(tick, 1000);
+}
+
+/* ===== قائمة ابدأ ===== */
+function toggleStartMenu() {
+  const menu = document.getElementById('startMenu');
+  menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+}
+document.addEventListener('click', (e) => {
+  const menu = document.getElementById('startMenu');
+  const btn = document.getElementById('startBtn');
+  if (menu.style.display === 'block' && !menu.contains(e.target) && e.target !== btn) {
+    menu.style.display = 'none';
+  }
+});
+
+/* ===== محتوى التطبيقات الوهمية ===== */
+const appData = {
+  about: {
+    title: '🔥 عن النظام',
+    body: `<h3 style="margin-top:0;">ALphoenixa OS</h3>
+      <p>هذه نسخة تجريبية محاكية (Simulation) لنظام تشغيل، مبنية بالكامل بـ HTML وCSS وJavaScript داخل المتصفح.</p>
+      <p>هي ليست نظام تشغيل حقيقياً — لا تدير عتاداً فعلياً ولا تشغّل برامج حقيقية — لكنها تحاكي شكل وتجربة استخدام سطح مكتب حقيقي: شريط مهام، قائمة ابدأ، نوافذ قابلة للسحب، وتطبيقات وهمية.</p>`
+  },
+  terminal: {
+    title: '📟 الطرفية',
+    body: `
+      <div id="termOutput" style="background:#000; color:#22c55e; font-family:monospace; padding:10px; border-radius:8px; height:180px; overflow-y:auto; margin-bottom:8px; text-align:left; direction:ltr;">ALphoenixa OS Terminal v1.0
+Type "help" for a list of commands.
+</div>
+      <input id="termInput" type="text" placeholder="اكتب أمراً... مثلاً help" style="width:100%; padding:8px; border-radius:6px; border:1px solid #334155; background:#0f172a; color:#e2e8f0; direction:ltr; text-align:left;">
+    `
+  },
+  files: {
+    title: '🗂️ الملفات',
+    body: `
+      <ul style="list-style:none; padding:0; margin:0;">
+        <li style="padding:8px; border-bottom:1px solid #232b45;">📁 المستندات</li>
+        <li style="padding:8px; border-bottom:1px solid #232b45;">📁 الصور</li>
+        <li style="padding:8px; border-bottom:1px solid #232b45;">📁 التنزيلات</li>
+        <li style="padding:8px; border-bottom:1px solid #232b45;">📄 ترحيب.txt</li>
+      </ul>
+      <p style="color:#94a3b8; font-size:12px; margin-top:10px;">هذا عارض ملفات وهمي للعرض فقط، لا يقرأ ملفات حقيقية من جهازك.</p>
+    `
+  },
+  settings: {
+    title: '⚙️ الإعدادات',
+    body: `
+      <label style="display:block; margin-bottom:10px;">لون خلفية سطح المكتب:</label>
+      <div style="display:flex; gap:10px;">
+        <button onclick="setWallpaper('radial-gradient(circle at 30% 20%, #2b1055, #0b0f1a 70%)')" style="width:36px; height:36px; border-radius:8px; border:none; background:#2b1055; cursor:pointer;"></button>
+        <button onclick="setWallpaper('radial-gradient(circle at 30% 20%, #0f3d3e, #0b0f1a 70%)')" style="width:36px; height:36px; border-radius:8px; border:none; background:#0f3d3e; cursor:pointer;"></button>
+        <button onclick="setWallpaper('radial-gradient(circle at 30% 20%, #5c1a1a, #0b0f1a 70%)')" style="width:36px; height:36px; border-radius:8px; border:none; background:#5c1a1a; cursor:pointer;"></button>
+        <button onclick="setWallpaper('radial-gradient(circle at 30% 20%, #1a2c5c, #0b0f1a 70%)')" style="width:36px; height:36px; border-radius:8px; border:none; background:#1a2c5c; cursor:pointer;"></button>
+      </div>
+    `
+  },
+  browser: {
+    title: '🌐 المتصفح',
+    body: `
+      <div style="display:flex; gap:6px; margin-bottom:10px;">
+        <input id="browserUrl" type="text" value="alphoenixa://home" style="flex:1; padding:8px; border-radius:6px; border:1px solid #334155; background:#0f172a; color:#e2e8f0; direction:ltr; text-align:left; font-size:12px;">
+        <button onclick="loadBrowserPage()" style="padding:8px 14px; border-radius:6px; border:none; background:#2563eb; color:#fff; cursor:pointer; font-size:12px;">اذهب</button>
+      </div>
+      <div id="browserContent" style="background:#0f172a; border-radius:8px; padding:16px; min-height:120px;">
+        <h3 style="margin-top:0;">🌐 صفحة ALphoenixa الرئيسية</h3>
+        <p style="color:#94a3b8; font-size:12px;">هذا متصفح وهمي للعرض فقط، لا يتصل بالإنترنت الحقيقي ولا يفتح مواقع فعلية. جرّب تكتب أي عنوان واضغط "اذهب".</p>
+      </div>
+    `
+  }
+};
+
+function loadBrowserPage() {
+  const url = document.getElementById('browserUrl').value.trim();
+  const content = document.getElementById('browserContent');
+  content.innerHTML = `<h3 style="margin-top:0;">🌐 ${url || 'صفحة فارغة'}</h3><p style="color:#94a3b8; font-size:12px;">هذه صفحة وهمية تمثل "${url}" — المتصفح لا يتصل فعلياً بالإنترنت.</p>`;
+}
+
+const wallpapers = [
+  'radial-gradient(circle at 30% 20%, #2b1055, #0b0f1a 70%)',
+  'radial-gradient(circle at 30% 20%, #0f3d3e, #0b0f1a 70%)',
+  'radial-gradient(circle at 30% 20%, #5c1a1a, #0b0f1a 70%)',
+  'radial-gradient(circle at 30% 20%, #1a2c5c, #0b0f1a 70%)'
+];
+
+function setWallpaper(gradient) {
+  document.getElementById('desktop').style.background = gradient;
+  try { localStorage.setItem('alphoenixa_wallpaper', gradient); } catch (e) {}
+}
+
+function randomWallpaper() {
+  const current = document.getElementById('desktop').style.background;
+  let choice;
+  do { choice = wallpapers[Math.floor(Math.random() * wallpapers.length)]; } while (choice === current && wallpapers.length > 1);
+  setWallpaper(choice);
+}
+
+function refreshDesktop() {
+  playSound('open');
+}
+
+/* استعادة الخلفية المحفوظة عند فتح الصفحة */
+(function restoreWallpaper() {
+  try {
+    const saved = localStorage.getItem('alphoenixa_wallpaper');
+    if (saved) document.getElementById('desktop').style.background = saved;
+  } catch (e) {}
+})();
+
+/* ===== أصوات النظام (مولّدة بدون ملفات صوتية خارجية) ===== */
+let audioCtx = null;
+function playSound(type) {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    const now = audioCtx.currentTime;
+    if (type === 'open') {
+      osc.frequency.setValueAtTime(440, now);
+      osc.frequency.exponentialRampToValueAtTime(880, now + 0.12);
+    } else {
+      osc.frequency.setValueAtTime(660, now);
+      osc.frequency.exponentialRampToValueAtTime(220, now + 0.14);
+    }
+    gain.gain.setValueAtTime(0.08, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+    osc.start(now);
+    osc.stop(now + 0.16);
+  } catch (e) {}
+}
+
+/* ===== قائمة الكليك اليمين ===== */
+const desktopEl = document.getElementById('desktop');
+desktopEl.addEventListener('contextmenu', (e) => {
+  if (e.target.id !== 'desktop') return; // فقط على خلفية سطح المكتب الفارغة
+  e.preventDefault();
+  const menu = document.getElementById('contextMenu');
+  menu.style.top = e.clientY + 'px';
+  menu.style.left = e.clientX + 'px';
+  menu.style.display = 'block';
+});
+function hideContextMenu() {
+  document.getElementById('contextMenu').style.display = 'none';
+}
+document.addEventListener('click', (e) => {
+  const menu = document.getElementById('contextMenu');
+  if (menu.style.display === 'block' && !menu.contains(e.target)) hideContextMenu();
+});
+
+/* ===== إدارة النوافذ ===== */
+let zTop = 100;
+const openWindows = {};
+
+function openWindow(appId) {
+  if (openWindows[appId]) {
+    bringToFront(openWindows[appId]);
+    return;
+  }
+  const data = appData[appId];
+  const win = document.createElement('div');
+  win.className = 'app-window';
+  win.style.width = '340px';
+  win.style.height = '260px';
+  win.style.top = (60 + Math.random() * 80) + 'px';
+  win.style.left = (60 + Math.random() * 120) + 'px';
+  win.style.zIndex = ++zTop;
+
+  win.innerHTML = `
+    <div class="window-titlebar">
+      <span>${data.title}</span>
+      <div class="window-controls">
+        <button class="win-btn win-min" onclick="minimizeWindow('${appId}')"></button>
+        <button class="win-btn win-close" onclick="closeWindow('${appId}')"></button>
+      </div>
+    </div>
+    <div class="window-body">${data.body}</div>
+  `;
+
+  document.getElementById('desktop').appendChild(win);
+  openWindows[appId] = win;
+  makeDraggable(win, win.querySelector('.window-titlebar'));
+  win.addEventListener('mousedown', () => bringToFront(win));
+  playSound('open');
+
+  addTaskbarButton(appId, data.title);
+
+  if (appId === 'terminal') setupTerminal(win);
+  saveOpenWindows();
+}
+
+function saveOpenWindows() {
+  try { localStorage.setItem('alphoenixa_open_windows', JSON.stringify(Object.keys(openWindows))); } catch (e) {}
+}
+
+function restoreOpenWindows() {
+  try {
+    const ids = JSON.parse(localStorage.getItem('alphoenixa_open_windows') || '[]');
+    ids.forEach(id => { if (appData[id]) openWindow(id); });
+  } catch (e) {}
+}
+
+function bringToFront(win) {
+  win.style.zIndex = ++zTop;
+}
+
+function closeWindow(appId) {
+  if (openWindows[appId]) {
+    openWindows[appId].remove();
+    delete openWindows[appId];
+    playSound('close');
+  }
+  removeTaskbarButton(appId);
+  saveOpenWindows();
+}
+
+function minimizeWindow(appId) {
+  if (openWindows[appId]) openWindows[appId].style.display = 'none';
+}
+
+function addTaskbarButton(appId, title) {
+  const bar = document.getElementById('taskbarApps');
+  const btn = document.createElement('button');
+  btn.className = 'taskbar-app';
+  btn.id = 'task-' + appId;
+  btn.textContent = title;
+  btn.onclick = () => {
+    const win = openWindows[appId];
+    if (win.style.display === 'none') { win.style.display = 'flex'; bringToFront(win); }
+    else { win.style.display = 'none'; }
+  };
+  bar.appendChild(btn);
+}
+
+function removeTaskbarButton(appId) {
+  const btn = document.getElementById('task-' + appId);
+  if (btn) btn.remove();
+}
+
+function makeDraggable(win, handle) {
+  let offsetX = 0, offsetY = 0, dragging = false;
+  handle.addEventListener('mousedown', (e) => {
+    dragging = true;
+    offsetX = e.clientX - win.offsetLeft;
+    offsetY = e.clientY - win.offsetTop;
+  });
+  document.addEventListener('mousemove', (e) => {
+    if (!dragging) return;
+    win.style.left = (e.clientX - offsetX) + 'px';
+    win.style.top = (e.clientY - offsetY) + 'px';
+  });
+  document.addEventListener('mouseup', () => dragging = false);
+}
+
+/* ===== الطرفية الوهمية ===== */
+function setupTerminal(win) {
+  const input = win.querySelector('#termInput');
+  const output = win.querySelector('#termOutput');
+  input.addEventListener('keyup', (e) => {
+    if (e.key !== 'Enter') return;
+    const cmd = input.value.trim();
+    output.innerHTML += `\n$ ${cmd}\n`;
+    output.innerHTML += runCommand(cmd) + '\n';
+    input.value = '';
+    output.scrollTop = output.scrollHeight;
+  });
+}
+
+function runCommand(cmd) {
+  const c = cmd.toLowerCase();
+  if (c === 'help') return 'Available commands: help, about, date, clear, echo <text>';
+  if (c === 'about') return 'ALphoenixa OS - a simulated desktop built with HTML/CSS/JS.';
+  if (c === 'date') return new Date().toString();
+  if (c === 'clear') { setTimeout(() => { document.getElementById('termOutput').innerHTML = ''; }, 0); return ''; }
+  if (c.startsWith('echo ')) return cmd.slice(5);
+  if (c === '') return '';
+  return `command not found: ${cmd}`;
+}
+</script>
+
+</body>
+</html>
