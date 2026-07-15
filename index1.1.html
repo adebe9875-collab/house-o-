@@ -98,6 +98,17 @@
     .site-header { flex-direction: column; gap: 10px; padding: 15px; }
     .header-nav { gap: 15px; }
   }
+
+  @keyframes micPulse {
+    0% { box-shadow: 0 0 0 0 rgba(220,38,38,0.55); }
+    70% { box-shadow: 0 0 0 12px rgba(220,38,38,0); }
+    100% { box-shadow: 0 0 0 0 rgba(220,38,38,0); }
+  }
+  #micBtn.listening {
+    background: linear-gradient(145deg,#ef4444,#dc2626) !important;
+    animation: micPulse 1.4s infinite;
+  }
+  #micBtn:hover { transform: scale(1.06); }
 </style>
 </head>
 <body>
@@ -223,6 +234,11 @@
           <div class="os-item" data-type="linux" data-name="linux mint">Linux Mint <a href="https://linuxmint.com/download.php" target="_blank" class="btn">Download</a></div>
         </div>
 
+        <div class="os-group" data-letter="T">
+          <h3 class="letter-header">حرف T</h3>
+          <div class="os-item" data-type="linux" data-name="tails os">Tails OS (خصوصية وتصفح آمن) <a href="https://tails.net/install/index.en.html" target="_blank" class="btn">Download</a></div>
+        </div>
+
         <div class="os-group" data-letter="W">
           <h3 class="letter-header">حرف W</h3>
           <div class="os-item" data-type="windows" data-name="windows 11">Windows 11 <a href="https://www.microsoft.com/software-download/windows11" target="_blank" class="btn">Download</a></div>
@@ -244,6 +260,7 @@
               <th style="padding:12px; border-bottom:2px solid #334155; color:#f59e0b;">macOS</th>
               <th style="padding:12px; border-bottom:2px solid #334155; color:#f59e0b;">Unix</th>
               <th style="padding:12px; border-bottom:2px solid #334155; color:#f59e0b;">BSD</th>
+              <th style="padding:12px; border-bottom:2px solid #334155; color:#f59e0b;">Tails OS</th>
             </tr>
           </thead>
           <tbody>
@@ -254,6 +271,7 @@
               <td style="padding:12px; border-bottom:1px solid #334155;">مدفوع (فقط مع أجهزة Apple)</td>
               <td style="padding:12px; border-bottom:1px solid #334155;">مجاني غالباً (FreeDOS)</td>
               <td style="padding:12px; border-bottom:1px solid #334155;">مجاني بالكامل</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">مجاني بالكامل</td>
             </tr>
             <tr>
               <td style="padding:12px; border-bottom:1px solid #334155; font-weight:600;">توافق البرامج</td>
@@ -262,6 +280,7 @@
               <td style="padding:12px; border-bottom:1px solid #334155;">جيد لبرامج Apple والتصميم</td>
               <td style="padding:12px; border-bottom:1px solid #334155;">محدود جداً، أساسا برامج DOS القديمة</td>
               <td style="padding:12px; border-bottom:1px solid #334155;">محدود، لكن متوافق مع أغلب برامج Linux</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">محدود جداً، مصمم فقط لتصفح آمن ومجهول</td>
             </tr>
             <tr>
               <td style="padding:12px; border-bottom:1px solid #334155; font-weight:600;">الألعاب</td>
@@ -270,6 +289,7 @@
               <td style="padding:12px; border-bottom:1px solid #334155;">دعم محدود جداً</td>
               <td style="padding:12px; border-bottom:1px solid #334155;">غير مخصص للألعاب</td>
               <td style="padding:12px; border-bottom:1px solid #334155;">دعم ضعيف جداً</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">غير مخصص للألعاب إطلاقاً</td>
             </tr>
             <tr>
               <td style="padding:12px; border-bottom:1px solid #334155; font-weight:600;">الأمان</td>
@@ -278,6 +298,7 @@
               <td style="padding:12px; border-bottom:1px solid #334155;">آمن جداً بطبيعته</td>
               <td style="padding:12px; border-bottom:1px solid #334155;">بسيط لكن قديم أمنياً</td>
               <td style="padding:12px; border-bottom:1px solid #334155;">من الأكثر أماناً على الإطلاق</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">الأعلى خصوصية وإخفاءً للهوية، مصمم لهذا الغرض تحديداً</td>
             </tr>
             <tr>
               <td style="padding:12px; border-bottom:1px solid #334155; font-weight:600;">سهولة الاستخدام</td>
@@ -286,6 +307,7 @@
               <td style="padding:12px; border-bottom:1px solid #334155;">سهل وبسيط جداً</td>
               <td style="padding:12px; border-bottom:1px solid #334155;">صعب، بيئة سطر أوامر فقط غالباً</td>
               <td style="padding:12px; border-bottom:1px solid #334155;">يحتاج خبرة تقنية</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">سهل التشغيل (يعمل من فلاشة USB مباشرة) لكن محدود الاستخدام</td>
             </tr>
             <tr>
               <td style="padding:12px; border-bottom:1px solid #334155; font-weight:600;">التخصيص</td>
@@ -294,6 +316,7 @@
               <td style="padding:12px; border-bottom:1px solid #334155;">محدود جداً</td>
               <td style="padding:12px; border-bottom:1px solid #334155;">محدود، نظام قديم وبسيط</td>
               <td style="padding:12px; border-bottom:1px solid #334155;">تخصيص عالي المستوى للمحترفين</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">شبه معدوم، مصمم عمداً ليبقى موحّداً وآمناً</td>
             </tr>
             <tr>
               <td style="padding:12px; font-weight:600;">استهلاك الموارد</td>
@@ -302,6 +325,7 @@
               <td style="padding:12px;">متوسط، لكنه محسّن لأجهزة Apple فقط</td>
               <td style="padding:12px;">خفيف جداً</td>
               <td style="padding:12px;">خفيف جداً وعالي الأداء</td>
+              <td style="padding:12px;">خفيف، ويعمل مباشرة من الذاكرة بدون تثبيت</td>
             </tr>
           </tbody>
         </table>
@@ -312,8 +336,19 @@
 
       <div id="chatLog" style="text-align:right; background:#0f172a; border-radius:10px; padding:14px; min-height:100px; max-height:280px; overflow-y:auto; margin-bottom:14px; display:flex; flex-direction:column; gap:10px;"></div>
 
+      <div id="listeningStatus" style="display:none; text-align:right; font-size:13px; color:#f59e0b; margin-bottom:8px;">
+        🎙️ يسمعك الآن... <span id="liveTranscript" style="color:#f8fafc; font-weight:600;"></span>
+      </div>
+
       <div style="display:flex; gap:8px;">
-        <button id="micBtn" title="التحدث بالصوت" style="width:48px; height:48px; flex-shrink:0; border-radius:50%; border:none; background:#334155; color:#fff; font-size:18px; cursor:pointer;">🎤</button>
+        <button id="micBtn" title="التحدث بالصوت" style="width:48px; height:48px; flex-shrink:0; border-radius:50%; border:none; background:linear-gradient(145deg,#2563eb,#1d4ed8); color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(37,99,235,0.35); transition:background .2s, box-shadow .2s, transform .15s;">
+          <svg id="micIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+            <path d="M19 10v1a7 7 0 0 1-14 0v-1"></path>
+            <line x1="12" y1="19" x2="12" y2="23"></line>
+            <line x1="8" y1="23" x2="16" y2="23"></line>
+          </svg>
+        </button>
         <input type="text" id="chatInput" placeholder="اكتب أو اضغط المايك للتحدث..." style="flex:1; padding:12px; border-radius:10px; border:1px solid #475569; background:#0f172a; color:#f8fafc; text-align:right;">
         <button class="action-btn" id="chatSend" style="width:auto; padding:12px 22px; margin-top:0;">إرسال</button>
       </div>
@@ -460,9 +495,12 @@ const osKnowledge = {
   bsd: { keys: ['freebsd', 'bsd', 'بي اس دي'], label: 'BSD',
     price: 'مجاني بالكامل', gaming: 'دعم ضعيف جداً', security: 'من الأكثر أماناً على الإطلاق',
     ease: 'يحتاج خبرة تقنية', customization: 'تخصيص عالي المستوى للمحترفين', resources: 'خفيف جداً وعالي الأداء' },
-  unix: { keys: ['unix', 'freedos', 'يونكس'], label: 'Unix / DOS',
+  unix: { keys: ['unix', 'freedos', 'يونكس', 'دوس'], label: 'يونكس أو دوس',
     price: 'مجاني غالباً', gaming: 'غير مخصص للألعاب', security: 'بسيط لكن قديم أمنياً',
-    ease: 'صعب، بيئة سطر أوامر فقط غالباً', customization: 'محدود، نظام قديم وبسيط', resources: 'خفيف جداً' }
+    ease: 'صعب، بيئة سطر أوامر فقط غالباً', customization: 'محدود، نظام قديم وبسيط', resources: 'خفيف جداً' },
+  tails: { keys: ['tails', 'tails os', 'تيلز'], label: 'Tails OS',
+    price: 'مجاني بالكامل', gaming: 'غير مخصص للألعاب إطلاقاً', security: 'الأعلى خصوصية وإخفاءً للهوية، مصمم لهذا الغرض تحديداً',
+    ease: 'سهل التشغيل من فلاشة USB مباشرة لكن محدود الاستخدام', customization: 'شبه معدوم، مصمم عمداً ليبقى موحّداً وآمناً', resources: 'خفيف، ويعمل مباشرة من الذاكرة بدون تثبيت' }
 };
 
 function findOSMatches(text) {
@@ -484,6 +522,14 @@ function addChatBubble(text, isUser) {
   bubble.textContent = text;
   log.appendChild(bubble);
   log.scrollTop = log.scrollHeight;
+
+  if (!isUser && window.speechSynthesis) {
+    window.speechSynthesis.cancel();
+    const spokenText = text.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{200D}\uFE0F]/gu, '').replace(/\n+/g, '. ');
+    const utterance = new SpeechSynthesisUtterance(spokenText);
+    utterance.lang = 'ar-SA';
+    window.speechSynthesis.speak(utterance);
+  }
 }
 
 function handleChatSend() {
@@ -498,13 +544,14 @@ function handleChatSend() {
 
   if (matches.length >= 2) {
     const a = matches[0], b = matches[1];
-    reply = `مقارنة بين ${a.label} و ${b.label}:\n\n`
+    reply = `مقارنة كاملة بين ${a.label} و ${b.label}:\n\n`
       + `💰 السعر:\n${a.label}: ${a.price}\n${b.label}: ${b.price}\n\n`
       + `🎮 الألعاب:\n${a.label}: ${a.gaming}\n${b.label}: ${b.gaming}\n\n`
       + `🛡️ الأمان:\n${a.label}: ${a.security}\n${b.label}: ${b.security}\n\n`
       + `🧑‍💻 سهولة الاستخدام:\n${a.label}: ${a.ease}\n${b.label}: ${b.ease}\n\n`
       + `🎨 التخصيص:\n${a.label}: ${a.customization}\n${b.label}: ${b.customization}\n\n`
-      + `⚙️ استهلاك الموارد:\n${a.label}: ${a.resources}\n${b.label}: ${b.resources}`;
+      + `⚙️ استهلاك الموارد:\n${a.label}: ${a.resources}\n${b.label}: ${b.resources}\n\n`
+      + `هذه كانت كل النقاط الأساسية للمقارنة بين ${a.label} و ${b.label}، إذا عندك سؤال عن نظامين آخرين اكتبهما وأنا جاهز.`;
   } else if (matches.length === 1) {
     reply = `ذكرت ${matches[0].label} فقط. اكتب اسم نظام ثانٍ حتى أقارن بينهما، مثلاً: "قارن بين ${matches[0].label} و windows".`;
   } else {
@@ -526,32 +573,39 @@ const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechReco
 if (SpeechRecognitionAPI) {
   const recognition = new SpeechRecognitionAPI();
   recognition.lang = 'ar-SA';
-  recognition.interimResults = false;
+  recognition.interimResults = true;
   let listening = false;
+  const statusBox = document.getElementById('listeningStatus');
+  const liveSpan = document.getElementById('liveTranscript');
 
   micBtn.addEventListener('click', () => {
     if (listening) return;
     listening = true;
-    micBtn.style.background = '#dc2626';
-    micBtn.textContent = '🔴';
+    micBtn.classList.add('listening');
+    statusBox.style.display = 'block';
+    liveSpan.textContent = '';
     recognition.start();
   });
 
   recognition.addEventListener('result', (e) => {
-    const text = e.results[0][0].transcript;
+    let text = '';
+    for (let i = 0; i < e.results.length; i++) {
+      text += e.results[i][0].transcript;
+    }
+    liveSpan.textContent = text;
     document.getElementById('chatInput').value = text;
   });
 
   recognition.addEventListener('end', () => {
     listening = false;
-    micBtn.style.background = '#334155';
-    micBtn.textContent = '🎤';
+    micBtn.classList.remove('listening');
+    statusBox.style.display = 'none';
   });
 
   recognition.addEventListener('error', () => {
     listening = false;
-    micBtn.style.background = '#334155';
-    micBtn.textContent = '🎤';
+    micBtn.classList.remove('listening');
+    statusBox.style.display = 'none';
   });
 } else {
   micBtn.addEventListener('click', () => {
