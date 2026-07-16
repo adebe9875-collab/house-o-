@@ -1,416 +1,751 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مركز تحميل الأنظمة - تطبيق آدم</title>
-    <style>
-        /* التنسيقات العامة للموقع */
-        body { font-family: sans-serif; background: #0f172a; color: #f8fafc; padding: 0; margin: 0; text-align: center; }
-        
-        /* --- تصميم الهيدر (Header) الجديد --- */
-        .site-header {
-            background: #1e293b;
-            border-bottom: 1px solid #334155;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .header-logo {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: #2563eb;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .header-logo span {
-            color: #f59e0b;
-        }
-        .header-nav {
-            display: flex;
-            gap: 20px;
-        }
-        .nav-link {
-            color: #94a3b8;
-            text-decoration: none;
-            font-size: 0.95rem;
-            font-weight: 500;
-            transition: color 0.2s;
-        }
-        .nav-link:hover, .nav-link.active {
-            color: #f8fafc;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>houseOS</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #0f172a;
+    color: #f8fafc;
+    padding: 0;
+    margin: 0;
+  }
 
-        /* حاوية المحتوى الرئيسي */
-        .main-content { padding: 30px 20px; }
-        .container { max-width: 800px; margin: 0 auto; background: #1e293b; padding: 20px; border-radius: 15px; border: 1px solid #334155; }
-        
-        /* تصميم صندوق الملاحظات */
-        .info-box { background: #1e293b; border-right: 5px solid #2563eb; padding: 15px; text-align: right; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .info-box.alert { border-right-color: #f59e0b; }
-        .info-box h4 { margin-top: 0; color: #f59e0b; font-size: 1.1rem; }
-        .info-box p { margin: 5px 0; font-size: 0.95rem; line-height: 1.6; }
-        .info-box ul { margin: 5px 0; padding-right: 20px; font-size: 0.95rem; }
-        
-        /* أزرار التبويبات والبحث */
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; flex-wrap: wrap; }
-        .tab-btn { padding: 10px 15px; cursor: pointer; background: #334155; color: white; border: none; border-radius: 5px; font-weight: bold; transition: background 0.2s; }
-        .tab-btn:hover, .tab-btn.active { background: #2563eb; }
-        
-        input { width: 100%; padding: 15px; border-radius: 10px; border: 1px solid #475569; background: #0f172a; color: white; margin-bottom: 20px; box-sizing: border-box; text-align: right; }
-        .os-group { text-align: right; margin-top: 20px; }
-        .letter-header { color: #f59e0b; border-bottom: 2px solid #334155; padding-bottom: 5px; margin-bottom: 10px; }
-        .os-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #1e293b; border-bottom: 1px solid #334155; }
-        .btn { background: #2563eb; padding: 6px 18px; border-radius: 5px; text-decoration: none; color: white; font-size: 0.9rem; font-weight: bold; transition: background 0.2s; }
-        .btn:hover { background: #1d4ed8; }
+  /* الهيدر */
+  .site-header {
+    background: #1e293b;
+    border-bottom: 1px solid #334155;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+  .header-logo {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #2563eb;
+    text-decoration: none;
+  }
+  .header-logo span { color: #f59e0b; }
+  .header-nav { display: flex; gap: 20px; }
+  .nav-link {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+    transition: color 0.2s;
+  }
+  .nav-link:hover, .nav-link.active { color: #f8fafc; }
 
-        /* شاشات الهواتف الذكية للهيدر */
-        @media (max-width: 600px) {
-            .site-header { flex-direction: column; gap: 10px; padding: 15px; }
-            .header-nav { gap: 15px; }
-        }
-    </style>
+  .main-content { padding: 30px 20px; text-align: center; }
+  .container { max-width: 900px; margin: 0 auto; background: #1e293b; padding: 25px; border-radius: 15px; border: 1px solid #334155; }
+
+  /* قسم مشخص الحاسوب */
+  .field { margin-bottom: 18px; text-align: right; }
+  label { display: block; font-size: 14px; font-weight: 600; color: #cbd5e1; margin-bottom: 8px; }
+  select, input[type=range] { width: 100%; font-family: inherit; font-size: 14px; }
+  select {
+    padding: 10px 12px; border-radius: 10px; border: 1px solid #475569;
+    background: #0f172a; color: #f8fafc; outline: none;
+  }
+  select:focus { border-color: #2563eb; }
+  input[type=range] { accent-color: #2563eb; }
+  .ram-value { font-weight: 700; color: #2563eb; }
+  button.action-btn {
+    width: 100%; margin-top: 10px; padding: 14px; border: none;
+    border-radius: 10px; background: #2563eb; color: #fff;
+    font-size: 16px; font-weight: 700; cursor: pointer;
+    transition: background 0.2s;
+  }
+  button.action-btn:hover { background: #1d4ed8; }
+  .result {
+    display: none; margin-top: 22px; background: #0f172a;
+    border-radius: 10px; padding: 18px 20px; border-right: 5px solid #2563eb; text-align: right;
+  }
+  .result-title { font-size: 17px; font-weight: 700; margin: 0 0 8px; color: #f59e0b; }
+  .result-body { font-size: 14px; line-height: 1.8; margin: 0; color: #cbd5e1; }
+
+  /* قسم مركز التحميل */
+  .info-box { background: #0f172a; border-right: 5px solid #2563eb; padding: 15px; text-align: right; border-radius: 8px; margin-bottom: 20px; }
+  .info-box.alert { border-right-color: #f59e0b; }
+  .info-box h4 { margin-top: 0; color: #f59e0b; font-size: 1.1rem; }
+  .info-box p, .info-box ul { margin: 5px 0; font-size: 0.95rem; line-height: 1.6; padding-right: 20px; }
+  .tabs-inner { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; flex-wrap: wrap; }
+  .tab-btn { padding: 10px 15px; cursor: pointer; background: #334155; color: white; border: none; border-radius: 5px; font-weight: bold; transition: background 0.2s; }
+  .tab-btn:hover, .tab-btn.active { background: #2563eb; }
+  #search { width: 100%; padding: 15px; border-radius: 10px; border: 1px solid #475569; background: #0f172a; color: white; margin-bottom: 20px; text-align: right; outline: none; }
+  #search:focus { border-color: #2563eb; }
+  .os-group { text-align: right; margin-top: 20px; }
+  .letter-header { color: #f59e0b; border-bottom: 2px solid #334155; padding-bottom: 5px; margin-bottom: 10px; }
+  .os-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #0f172a; border-bottom: 1px solid #334155; border-radius: 5px; margin-bottom: 5px; }
+  .btn { background: #2563eb; padding: 6px 18px; border-radius: 5px; text-decoration: none; color: white; font-size: 0.9rem; font-weight: bold; transition: background 0.2s; }
+  .btn:hover { background: #1d4ed8; }
+
+  .view { display: none; }
+  .view.active { display: block; }
+
+  @media (max-width: 600px) {
+    .site-header { flex-direction: column; gap: 10px; padding: 15px; }
+    .header-nav { gap: 15px; flex-wrap: wrap; justify-content: center; }
+  }
+
+  @keyframes micPulse {
+    0% { box-shadow: 0 0 0 0 rgba(220,38,38,0.55); }
+    70% { box-shadow: 0 0 0 12px rgba(220,38,38,0); }
+    100% { box-shadow: 0 0 0 0 rgba(220,38,38,0); }
+  }
+  #micBtn.listening {
+    background: linear-gradient(145deg,#ef4444,#dc2626) !important;
+    animation: micPulse 1.4s infinite;
+  }
+  #micBtn:hover { transform: scale(1.06); }
+</style>
 </head>
 <body>
 
-<!-- الهيدر الجديد والمحاذاة التلقائية -->
 <header class="site-header">
-    <a href="#" class="header-logo">📱 تطبيق <span>آدم</span></a>
-    <nav class="header-nav">
-        <a href="#" class="nav-link active">الرئيسية</a>
-        <a href="https://archlinux.org" target="_blank" class="nav-link">موسوعة لينكس</a>
-        <a href="#" class="nav-link">اتصل بنا</a>
-    </nav>
+  <a href="#" class="header-logo" style="display:flex; align-items:center; gap:8px;">
+    <img id="brandLogo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAICAAAAiOjnJAAA0h0lEQVR4nO2dd3wcxdnHn2dmd+9Op9Pp1LtkS6649wLGGFwwYAzGGDC9QygBAiShhxcCCYQAIbTQQktoAUMw1QbccMG9YNmyrd7r9d2ded4/TpaFq2x8QZL3+zk+gO52bvb2t88885uZHczpNx4sLI427JeugEX3xBKWRVSwhGURFSxhWUQFS1gWUcESlkVUsIRlERUsYVlEBUtYFlHBEpZFVLCEZREVLGFZRAVLWBZRwRKWRVSwhGURFSxhWUQFS1gWUcESlkVUsIRlERUsYVlEBUtYFlHBEpZFVLCEZREVLGFZRAVLWBZRwRKWRVSwhGURFSxhWUQFS1gWUcESlkVUsIRlERUsYVlEBUtYFlHBEpZFVLCEZREVLGFZRAVLWBZRwRKWRVSwhNUpMEzTMMxfuhZHE0tYvzCmaYZ1fUD/3iOGDTRN8UtX56ih/NIVOHYxTSGEKOiZc8kFs+acc0ZpWcWsudf5A0HGusPdbgnrF0AIYZgiLzvjkvNnzj77jMTkRAZwXL/eM0475bU3P7Dbbb90BY8CaG158r9ECGmYRkZ66oWzz5g7Z6bXnvjX5bW6aT43PYsjFm7fedb517R4fd0gaFkR63+ElFI3jJSkpPPOPvWSC8423WlPrWl4a8OOKr+MUfCC43wn5bl6F/SYdea0519+uxsELStiRR0ptide6بصمة" alt="houseOS logo" style="height:110px; width:auto;">
+    <div style="display:flex; flex-direction:column; line-height:1.1;">
+      <span id="brandText" style="font-size:1.4rem; font-weight:bold; color:#2563eb;">house<span style="color:#f59e0b;">OS</span></span>
+      <span style="font-size:11px; color:#94a3b8;">تطبيق آدم</span>
+    </div>
+  </a>
+  <nav class="header-nav">
+    <button class="nav-link" onclick="showView('diag', this)">مشخص الحاسوب</button>
+    <button class="nav-link active" onclick="showView('download', this)">مركز التحميل</button>
+    <button class="nav-link" onclick="showView('compare', this)">مقارنة الأنظمة</button>
+    <button class="nav-link" onclick="showView('source', this)">الكود المصدري</button>
+    <button class="nav-link" onclick="showView('verify', this)">التحقق من سلامة الأيزو</button>
+  </nav>
 </header>
 
 <div class="main-content">
-    <div class="container">
-        <h2>مركز تحميل أنظمة التشغيل الرسمية</h2>
-        
-        <!-- قسم الملاحظات والنصائح الجديد -->
-        <div class="info-box alert">
-            <h4>🛡️ تنبيه للأمان والحماية</h4>
-            <p>إذا أردت تنزيل نظام تشغيل <strong>أصلي ومحمي 100%</strong>، فمن فضلك اذهب دائماً إلى <strong>الموقع الرسمي</strong> المرفق بجانب كل نظام.</p>
-        </div>
+  <div class="container">
 
-        <div class="info-box">
-            <h4>💿 نصيحة لحرق الأنظمة على الفلاشة (USB)</h4>
-            <ul>
-                <li>إذا كنت تستخدم نظام <strong>الويندوز (Windows)</strong>: للحرق استخدم برنامج <strong>Rufus</strong> أو <strong>Ventoy</strong>.</li>
-                <li>إذا كنت تستخدم نظام <strong>اللينكس (Linux)</strong>: أفضل شيء للحرق هو <strong>Ventoy</strong>.</li>
-            </ul>
-        </div>
-        
-        <div class="tabs">
-            <button class="tab-btn active" onclick="filterOS('all', this)">الكل</button>
-            <button class="tab-btn" onclick="filterOS('windows', this)">Windows</button>
-            <button class="tab-btn" onclick="filterOS('linux', this)">Linux</button>
-            <button class="tab-btn" onclick="filterOS('bsd', this)">BSD</button>
-            <button class="tab-btn" onclick="filterOS('unix', this)">Unix / DOS</button>
-        </div>
+    <!-- الواجهة الأولى: مشخص الحاسوب -->
+    <div class="view" id="view-diag">
+      <h2>PoshipoOS</h2>
 
-        <input type="text" id="search" placeholder="ابحث عن نظام تشغيل..." onkeyup="searchOS()">
+      <div class="field">
+        <label>الرام (RAM): <span class="ram-value" id="ramOut">8</span> GB</label>
+        <input type="range" min="2" max="64" step="2" value="8" id="ram" oninput="document.getElementById('ramOut').innerText = this.value">
+      </div>
 
-        <div id="list">
-            <!-- حرف A -->
-            <div class="os-group" data-letter="A">
-                <h3 class="letter-header">حرف A</h3>
-                <div class="os-item" data-type="linux" data-name="arch linux">Arch Linux <a href="https://archlinux.org/download/" target="_blank" class="btn">Download</a></div>
-            </div>
+      <div class="field">
+        <label>نوع الذاكرة (RAM Type)</label>
+        <select id="ramType">
+          <option value="ddr3">DDR3</option>
+          <option value="ddr4" selected>DDR4</option>
+          <option value="ddr5">DDR5</option>
+        </select>
+      </div>
 
-            <!-- حرف D -->
-            <div class="os-group" data-letter="D">
-                <h3 class="letter-header">حرف D</h3>
-                <div class="os-item" data-type="linux" data-name="debian">Debian Linux <a href="https://www.debian.org/distrib/" target="_blank" class="btn">Download</a></div>
-                <div class="os-item" data-type="bsd" data-name="dragonfly bsd">DragonFly BSD (نظام التنين) <a href="https://www.dragonflybsd.org/download/" target="_blank" class="btn">Download</a></div>
-            </div>
+      <div class="field">
+        <label>نوع المعالج</label>
+        <select id="cpu">
+          <option value="1">ضعيف (Celeron / Pentium / Atom)</option>
+          <option value="2" selected>متوسط (Core i3 / Ryzen 3)</option>
+          <option value="3">جيد (Core i5 / Ryzen 5)</option>
+          <option value="4">قوي (Core i7/i9 / Ryzen 7/9 / Apple Silicon)</option>
+        </select>
+      </div>
 
-            <!-- حرف F -->
-            <div class="os-group" data-letter="F">
-                <h3 class="letter-header">حرف F</h3>
-                <div class="os-item" data-type="bsd" data-name="freebsd">FreeBSD (قوي وعالي الأداء) <a href="https://www.freebsd.org/where/" target="_blank" class="btn">Download</a></div>
-                <div class="os-item" data-type="unix" data-name="freedos">FreeDOS (النظام المفتوح) <a href="https://www.freedos.org/download/" target="_blank" class="btn">Download</a></div>
-            </div>
+      <div class="field">
+        <label>نوع التخزين</label>
+        <select id="storage">
+          <option value="hdd">قرص صلب تقليدي (HDD)</option>
+          <option value="ssd" selected>قرص SSD</option>
+          <option value="nvme">قرص NVMe سريع</option>
+        </select>
+      </div>
 
-            <!-- حرف L -->
-            <div class="os-group" data-letter="L">
-                <h3 class="letter-header">حرف L</h3>
-                <div class="os-item" data-type="linux" data-name="linux mint">Linux Mint <a href="https://linuxmint.com/download.php" target="_blank" class="btn">Download</a></div>
-            </div>
-            
-            <!-- حرف W -->
-            <div class="os-group" data-letter="W">
-                <h3 class="letter-header">حرف W</h3>
-                <div class="os-item" data-type="windows" data-name="windows 11">Windows 11 <a href="https://www.microsoft.com/software-download/windows11" target="_blank" class="btn">Download</a></div>
-                <div class="os-item" data-type="windows" data-name="windows 10">Windows 10 <a href="https://www.microsoft.com/software-download/windows10" target="_blank" class="btn">Download</a></div>
-            </div>
-        </div>
+      <div class="field">
+        <label>الاستخدام الأساسي</label>
+        <select id="usage">
+          <option value="basic">استخدام بسيط (تصفح، مكتبية)</option>
+          <option value="gaming">ألعاب</option>
+          <option value="dev">برمجة وتطوير</option>
+          <option value="design">تصميم ومونتاج</option>
+          <option value="old">إحياء حاسوب قديم جداً</option>
+        </select>
+      </div>
+
+      <button class="action-btn" id="go" onclick="diagnosePC()">شخّص حاسوبي</button>
+
+      <div class="result" id="result">
+        <p class="result-title" id="resultTitle"></p>
+        <p class="result-body" id="resultBody"></p>
+      </div>
     </div>
+
+    <!-- الواجهة الثانية: مركز التحميل -->
+    <div class="view active" id="view-download">
+      <h2>مركز تحميل أنظمة التشغيل الرسمية</h2>
+
+      <div class="info-box alert">
+        <h4>🛡️ تنبيه للأمان والحماية</h4>
+        <p>إذا أردت تنزيل نظام تشغيل <strong>أصلي ومحمي 100%</strong>، فمن فضلك اذهب دائماً إلى <strong>الموقع الرسمي</strong> المرفق بجانب كل نظام.</p>
+      </div>
+
+      <div class="info-box">
+        <h4>💿 نصيحة لحرق الأنظمة على الفلاشة (USB)</h4>
+        <ul>
+          <li>إذا كنت تستخدم نظام <strong>الويندوز (Windows)</strong>: للحرق استخدم برنامج <strong>Rufus</strong> أو <strong>Ventoy</strong>.</li>
+          <li>إذا كنت تستخدم نظام <strong>اللينكس (Linux)</strong>: أفضل شيء للحرق هو <strong>Ventoy</strong>.</li>
+        </ul>
+      </div>
+
+      <div class="info-box">
+        <h4>🔒 تحقق من سلامة الملف بعد التحميل (SHA256)</h4>
+        <p>كل نظام تشغيل موثوق ينشر بصمة رقمية (SHA256 Checksum) في موقعه الرسمي بجانب رابط التحميل. بعد ما تحمّل الملف، قارن بصمته ببصمة الموقع للتأكد إنه ما تعرض للتلاعب أو التلف أثناء التحميل.</p>
+        <ul>
+          <li><strong>ويندوز (PowerShell):</strong> <code>Get-FileHash file.iso -Algorithm SHA256</code></li>
+          <li><strong>لينكس (Terminal):</strong> <code>sha256sum file.iso</code></li>
+        </ul>
+      </div>
+
+      <div class="tabs-inner">
+        <button class="tab-btn active" onclick="filterOS('all', this)">الكل</button>
+        <button class="tab-btn" onclick="filterOS('windows', this)">Windows</button>
+        <button class="tab-btn" onclick="filterOS('linux', this)">Linux</button>
+        <button class="tab-btn" onclick="filterOS('bsd', this)">BSD</button>
+        <button class="tab-btn" onclick="filterOS('unix', this)">Unix / DOS</button>
+      </div>
+
+      <input type="text" id="search" placeholder="ابحث عن نظام تشغيل..." onkeyup="searchOS()">
+
+      <div id="list">
+        <div class="os-group" data-letter="A">
+          <h3 class="letter-header">حرف A</h3>
+          <div class="os-item" data-type="linux" data-name="arch linux">Arch Linux <a href="https://archlinux.org/download/" target="_blank" class="btn">Download</a></div>
+        </div>
+
+        <div class="os-group" data-letter="D">
+          <h3 class="letter-header">حرف D</h3>
+          <div class="os-item" data-type="linux" data-name="debian">Debian Linux <a href="https://www.debian.org/distrib/" target="_blank" class="btn">Download</a></div>
+          <div class="os-item" data-type="bsd" data-name="dragonfly bsd">DragonFly BSD (نظام التنين) <a href="https://www.dragonflybsd.org/download/" target="_blank" class="btn">Download</a></div>
+        </div>
+
+        <div class="os-group" data-letter="F">
+          <h3 class="letter-header">حرف F</h3>
+          <div class="os-item" data-type="bsd" data-name="freebsd">FreeBSD (قوي وعالي الأداء) <a href="https://www.freebsd.org/where/" target="_blank" class="btn">Download</a></div>
+          <div class="os-item" data-type="unix" data-name="freedos">FreeDOS (النظام المفتوح) <a href="https://www.freedos.org/download/" target="_blank" class="btn">Download</a></div>
+          <div class="os-item" data-type="linux" data-name="fedora">Fedora Linux <a href="https://fedoraproject.org/workstation/download" target="_blank" class="btn">Download</a></div>
+        </div>
+
+        <div class="os-group" data-letter="K">
+          <h3 class="letter-header">حرف K</h3>
+          <div class="os-item" data-type="linux" data-name="kali linux">Kali Linux (اختبار اختراق وأمن سيبراني) <a href="https://www.kali.org/get-kali/" target="_blank" class="btn">Download</a></div>
+        </div>
+
+        <div class="os-group" data-letter="L">
+          <h3 class="letter-header">حرف L</h3>
+          <div class="os-item" data-type="linux" data-name="linux mint">Linux Mint <a href="https://linuxmint.com/download.php" target="_blank" class="btn">Download</a></div>
+        </div>
+
+        <div class="os-group" data-letter="T">
+          <h3 class="letter-header">حرف T</h3>
+          <div class="os-item" data-type="linux" data-name="tails os">Tails OS (خصوصية وتصفح آمن) <a href="https://tails.net/install/index.en.html" target="_blank" class="btn">Download</a></div>
+        </div>
+
+        <div class="os-group" data-letter="O">
+          <h3 class="letter-header">حرف O</h3>
+          <div class="os-item" data-type="bsd" data-name="openbsd">OpenBSD (الأعلى أماناً بين أنظمة BSD) <a href="https://www.openbsd.org/" target="_blank" class="btn">Download</a></div>
+        </div>
+
+        <div class="os-group" data-letter="U">
+          <h3 class="letter-header">حرف U</h3>
+          <div class="os-item" data-type="linux" data-name="ubuntu">Ubuntu <a href="https://ubuntu.com/download/desktop" target="_blank" class="btn">Download</a></div>
+        </div>
+
+        <div class="os-group" data-letter="W">
+          <h3 class="letter-header">حرف W</h3>
+          <div class="os-item" data-type="windows" data-name="windows 11">Windows 11 <a href="https://www.microsoft.com/software-download/windows11" target="_blank" class="btn">Download</a></div>
+          <div class="os-item" data-type="windows" data-name="windows 10">Windows 10 <a href="https://www.microsoft.com/software-download/windows10" target="_blank" class="btn">Download</a></div>
+          <div class="os-item" data-type="windows" data-name="windows 8.1">Windows 8.1 (متوقف رسمياً) <a href="https://support.microsoft.com/windows" target="_blank" class="btn">Download</a></div>
+          <div class="os-item" data-type="windows" data-name="windows 7">Windows 7 (متوقف رسمياً) <a href="https://support.microsoft.com/windows" target="_blank" class="btn">Download</a></div>
+          <div class="os-item" data-type="windows" data-name="windows xp">Windows XP (قديم جداً وغير آمن للاستخدام اليومي) <a href="https://support.microsoft.com/windows" target="_blank" class="btn">Download</a></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- الواجهة الثالثة: مقارنة الأنظمة -->
+    <div class="view" id="view-compare">
+      <h2>مقارنة بين أنظمة التشغيل</h2>
+      <div style="overflow-x:auto;">
+        <table style="width:100%; border-collapse: collapse; text-align: right; font-size: 14px;">
+          <thead>
+            <tr style="background:#0f172a;">
+              <th style="padding:12px; border-bottom:2px solid #334155; color:#f59e0b;">المعيار</th>
+              <th style="padding:12px; border-bottom:2px solid #334155; color:#f59e0b;">Windows</th>
+              <th style="padding:12px; border-bottom:2px solid #334155; color:#f59e0b;">Linux</th>
+              <th style="padding:12px; border-bottom:2px solid #334155; color:#f59e0b;">macOS</th>
+              <th style="padding:12px; border-bottom:2px solid #334155; color:#f59e0b;">Unix</th>
+              <th style="padding:12px; border-bottom:2px solid #334155; color:#f59e0b;">BSD</th>
+              <th style="padding:12px; border-bottom:2px solid #334155; color:#f59e0b;">Tails OS</th>
+            </tr>
+          </thead>
+          <tbody id="compareTableBody">
+            <tr>
+              <td style="padding:12px; border-bottom:1px solid #334155; font-weight:600;">السعر</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">مدفوع (يأتي مع أغلب الأجهزة)</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">مجاني بالكامل</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">مدفوع (فقط مع أجهزة Apple)</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">مجاني غالباً (FreeDOS)</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">مجاني بالكامل</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">مجاني بالكامل</td>
+            </tr>
+            <tr>
+              <td style="padding:12px; border-bottom:1px solid #334155; font-weight:600;">توافق البرامج</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">الأوسع توافقاً</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">محدود لبعض البرامج التجارية</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">جيد لبرامج Apple والتصميم</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">محدود جداً، أساسا برامج DOS القديمة</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">محدود، لكن متوافق مع أغلب برامج Linux</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">محدود جداً، مصمم فقط لتصفح آمن ومجهول</td>
+            </tr>
+            <tr>
+              <td style="padding:12px; border-bottom:1px solid #334155; font-weight:600;">الألعاب</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">الأفضل والأكثر دعماً</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">تحسّن كثيراً لكن أقل من ويندوز</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">دعم محدود جداً</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">غير مخصص للألعاب</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">دعم ضعيف جداً</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">غير مخصص للألعاب إطلاقاً</td>
+            </tr>
+            <tr>
+              <td style="padding:12px; border-bottom:1px solid #334155; font-weight:600;">الأمان</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">هدف رئيسي للفيروسات</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">آمن جداً بطبيعته</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">آمن جداً بطبيعته</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">بسيط لكن قديم أمنياً</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">من الأكثر أماناً على الإطلاق</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">الأعلى خصوصية وإخفاءً للهوية، مصمم لهذا الغرض تحديداً</td>
+            </tr>
+            <tr>
+              <td style="padding:12px; border-bottom:1px solid #334155; font-weight:600;">سهولة الاستخدام</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">سهل جداً للمبتدئين</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">يحتاج تعلم في البداية</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">سهل وبسيط جداً</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">صعب، بيئة سطر أوامر فقط غالباً</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">يحتاج خبرة تقنية</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">سهل التشغيل (يعمل من فلاشة USB مباشرة) لكن محدود الاستخدام</td>
+            </tr>
+            <tr>
+              <td style="padding:12px; border-bottom:1px solid #334155; font-weight:600;">التخصيص</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">محدود نسبياً</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">حرية تخصيص كاملة تقريباً</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">محدود جداً</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">محدود، نظام قديم وبسيط</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">تخصيص عالي المستوى للمحترفين</td>
+              <td style="padding:12px; border-bottom:1px solid #334155;">شبه معدوم، مصمم عمداً ليبقى موحّداً وآمناً</td>
+            </tr>
+            <tr>
+              <td style="padding:12px; font-weight:600;">استهلاك الموارد</td>
+              <td style="padding:12px;">متوسط إلى ثقيل</td>
+              <td style="padding:12px;">خفيف جداً (توزيعات خفيفة متوفرة)</td>
+              <td style="padding:12px;">متوسط، لكنه محسّن لأجهزة Apple فقط</td>
+              <td style="padding:12px;">خفيف جداً</td>
+              <td style="padding:12px;">خفيف جداً وعالي الأداء</td>
+              <td style="padding:12px;">خفيف، ويعمل مباشرة من الذاكرة بدون تثبيت</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 style="margin-top:34px;">أو اسأل مساعد الأنظمة الذكي</h2>
+      <p style="text-align:right; color:#94a3b8; font-size:13px; margin-top:-10px;">مثال: قارن بين ubuntu و windows 11</p>
+
+      <div id="chatLog" style="text-align:right; background:#0f172a; border-radius:10px; padding:14px; min-height:100px; max-height:280px; overflow-y:auto; margin-bottom:14px; display:flex; flex-direction:column; gap:10px;">
+        <div style="color: #f59e0b; font-weight: bold;">[مساعد houseOS]: مرحباً بك! أنا مستعد للإجابة عن أي استفسار أو مقارنة ترغب بها بين أنظمة التشغيل.</div>
+      </div>
+
+      <div id="listeningStatus" style="display:none; text-align:right; font-size:13px; color:#ef4444; margin-bottom:8px;">
+        🎙️ جاري الاستماع صوتياً... <span id="liveTranscript" style="color:#f8fafc; font-weight:600;"></span>
+      </div>
+
+      <div style="display:flex; gap:8px;">
+        <button id="micBtn" onclick="toggleVoiceSearch()" title="التحدث بالصوت" style="width:48px; height:48px; flex-shrink:0; border-radius:50%; border:none; background:linear-gradient(145deg,#2563eb,#1d4ed8); color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(37,99,235,0.35); transition:background .2s, box-shadow .2s, transform .15s;">
+          <svg id="micIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+            <path d="M19 10v1a7 7 0 0 1-14 0v-1"></path>
+            <line x1="12" y1="19" x2="12" y2="23"></line>
+            <line x1="8" y1="23" x2="16" y2="23"></line>
+          </svg>
+        </button>
+        <input type="text" id="chatInput" placeholder="اكتب أو اضغط المايك للتحدث..." style="flex:1; padding:12px; border-radius:10px; border:1px solid #475569; background:#0f172a; color:#f8fafc; text-align:right; outline: none;">
+        <button class="action-btn" id="chatSend" onclick="handleChatSubmit()" style="width:auto; padding:12px 22px; margin-top:0;">إرسال</button>
+      </div>
+    </div>
+
+    <!-- الواجهة الرابعة: الكود المصدري -->
+    <div class="view" id="view-source">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <h2 style="margin:0;">houseOS — الكود المصدري</h2>
+        <button id="downloadSourceBtn" class="action-btn" style="width:auto; margin-top:0; padding:10px 20px;" onclick="downloadSourceCode()">تحميل الملف</button>
+      </div>
+      <p style="text-align:right; color:#94a3b8; font-size:13px; margin-top:-6px;">هذا التطبيق مفتوح المصدر بالكامل. بعد ما تحمّل الملف، قارن بصمة SHA256 اللي عندك بالبصمة الظاهرة تحت للتأكد إن الملف ما تغيّر:</p>
+      <div style="background:#0f172a; border-radius:10px; padding:10px 14px; margin-bottom:14px; direction:ltr; text-align:left; font-size:12px; color:#f59e0b; word-break:break-all;">
+        SHA256: <span id="sha256Value">جارٍ الحساب...</span>
+      </div>
+      <pre id="sourceCodeBox" style="background:#0f172a; border-radius:10px; padding:16px; max-height:380px; overflow:auto; direction:ltr; text-align:left; font-size:11px; line-height:1.6; color:#94a3b8; white-space:pre-wrap; word-break:break-word;"></pre>
+    </div>
+
+    <!-- الواجهة الخامسة: التحقق من سلامة الأيزو -->
+    <div class="view" id="view-verify">
+      <h2>مركز التحقق من سلامة ملفات الأنظمة (ISO)</h2>
+      <p style="text-align:right; color:#94a3b8; font-size:13px; margin-top:-10px;">اختر ملف الأيزو اللي حمّلته من "مركز التحميل"، وقارن بصمته مع البصمة الرسمية المنشورة في موقع النظام نفسه.</p>
+
+      <input type="file" id="isoFileInput" onchange="calculateFileHash(this)" style="width:100%; padding:12px; border-radius:10px; border:1px solid #475569; background:#0f172a; color:#f8fafc; margin-bottom:14px;">
+
+      <div style="background:#0f172a; border-radius:10px; padding:12px 14px; margin-bottom:14px; direction:ltr; text-align:left; font-size:12px; color:#f59e0b; word-break:break-all; min-height:20px;">
+        <span id="isoStatus">اختر ملفاً لحساب بصمته...</span>
+      </div>
+
+      <div class="field">
+        <label>الصق البصمة الرسمية هنا للمقارنة (اختياري):</label>
+        <input type="text" id="officialHashInput" placeholder="official SHA256 hash" style="width:100%; padding:10px; border-radius:8px; border:1px solid #475569; background:#0f172a; color:#f8fafc; direction:ltr; text-align:left; font-size:12px;" oninput="compareHashes()">
+      </div>
+
+      <div id="matchResult" style="text-align:right; font-size:14px; font-weight:600; margin-top:6px;"></div>
+    </div>
+
+  </div>
 </div>
 
 <script>
-    let currentFilter = 'all';
+/* التبديل بين الواجهات */
+function showView(name, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  document.querySelectorAll('.header-nav .nav-link').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
 
-    // دالة الفلترة عبر الأزرار
-    function filterOS(type, btn) {
-        currentFilter = type;
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        updateList();
+  const brand = document.getElementById('brandText');
+  const logo = document.getElementById('brandLogo');
+  if (name === 'diag') {
+    brand.innerHTML = 'Poshipo<span style="color:#f59e0b;">OS</span>';
+  } else {
+    brand.innerHTML = 'house<span style="color:#f59e0b;">OS</span>';
+  }
+
+  if (name === 'source') {
+    loadSourceCode();
+  }
+}
+
+/* 1. مشخص الحاسوب (PoshipoOS) */
+function diagnosePC() {
+  const ram = parseInt(document.getElementById('ram').value);
+  const ramType = document.getElementById('ramType').value.toUpperCase();
+  const cpu = parseInt(document.getElementById('cpu').value);
+  const storage = document.getElementById('storage').value;
+  const usage = document.getElementById('usage').value;
+
+  const resultBox = document.getElementById('result');
+  const resultTitle = document.getElementById('resultTitle');
+  const resultBody = document.getElementById('resultBody');
+
+  let score = ram / 2 + cpu * 3;
+  if (storage === 'ssd') score += 2;
+  if (storage === 'nvme') score += 4;
+
+  let systemRecommendation = "";
+  let details = "";
+
+  if (score < 8 || usage === 'old') {
+    systemRecommendation = "Linux Mint (XFCE Edition) أو Debian Stable";
+    details = `حاسوبك يمتلك مواصفات محدودة أو قديمة (الرام: ${ram}GB من نوع ${ramType}). لتفادي البطء والمشاكل، نقترح عليك تثبيت نظام خفيف ومستقر مثل <strong>Linux Mint XFCE</strong> أو <strong>Debian</strong>. هذه الأنظمة ستمنح جهازك حياة جديدة دون استهلاك موارد المعالج والذاكرة.`;
+  } else if (score >= 8 && score < 15) {
+    if (usage === 'gaming') {
+      systemRecommendation = "Windows 10 / Windows 11 Home";
+      details = `حاسوبك ذو أداء متوسط. بما أن استخدامك الأساسي هو الألعاب، فنظام <strong>Windows 10</strong> هو الخيار الأفضل للحصول على أعلى توافقية مع الألعاب والتعريفات، مع إيقاف الخدمات غير الضرورية لتحرير الذاكرة.`;
+    } else if (usage === 'dev' || usage === 'basic') {
+      systemRecommendation = "Ubuntu LTS أو Linux Mint (Cinnamon)";
+      details = `مواصفات جهازك ممتازة لتشغيل توزيعة <strong>Ubuntu LTS</strong> أو <strong>Linux Mint Cinnamon</strong>. ستحصل على استقرار تام، بيئة ممتازة للمطورين، واستهلاك طاقة منخفض مقارنة بويندوز.`;
+    } else {
+      systemRecommendation = "Windows 10 أو Fedora Workstation";
+      details = `مواصفاتك متوسطة متزنة. ننصحك بنظام <strong>Windows 10</strong> للأعمال العامة، أو <strong>Fedora</strong> إذا كنت تفضل التطور والبرمجيات الحديثة ومفتوحة المصدر.`;
     }
-
-    // دالة البحث
-    function searchOS() {
-        updateList();
+  } else {
+    // مواصفات قوية
+    if (usage === 'gaming' || usage === 'design') {
+      systemRecommendation = "Windows 11 (Pro Edition)";
+      details = `لديك وحش خارق! (الرام: ${ram}GB ${ramType}، مع تخزين فائق السرعة). نظام <strong>Windows 11 Pro</strong> سيستغل كامل قوة العتاد والتقنيات الحديثة مثل DirectX 12 Ultimate وجدولة المعالجات القوية لخدمة الألعاب والمونتاج العنيف.`;
+    } else if (usage === 'dev') {
+      systemRecommendation = "Arch Linux أو Fedora Workstation";
+      details = `للمطورين ذوي العتاد الخارق، نقترح <strong>Arch Linux</strong> للمحترفين الراغبين في بناء نظامهم من الصفر، أو <strong>Fedora Workstation</strong> لبيئة تطوير حديثة وقوية ومستقرة للغاية تدعم الحاويات (Docker/Podman) بسلاسة.`;
+    } else {
+      systemRecommendation = "Windows 11 أو FreeBSD";
+      details = `بمواصفاتك العالية، يمكنك تشغيل أي نظام تشغيل بسلاسة مطلقة. نقترح <strong>Windows 11</strong> للراحة العامة، أو خوض تجربة الأنظمة الاحترافية كـ <strong>FreeBSD</strong> للمخدمات والشبكات العالية الأمان.`;
     }
+  }
 
-    // تحديث القائمة بناء على الفلتر والبحث
-    function updateList() {
-        const query = document.getElementById('search').value.toLowerCase().trim();
-        const groups = document.querySelectorAll('.os-group');
+  resultTitle.innerHTML = `💻 التشخيص المقترح: ${systemRecommendation}`;
+  resultBody.innerHTML = details;
+  resultBox.style.display = 'block';
+}
 
-        groups.forEach(group => {
-            const items = group.querySelectorAll('.os-item');
-            let visibleItemsInGroup = 0;
+/* 2. تصفية وبحث مركز التحميل */
+function filterOS(type, btn) {
+  document.querySelectorAll('.tabs-inner .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
 
-            items.forEach(item => {
-                const itemType = item.getAttribute('data-type');
-                const itemName = item.getAttribute('data-name');
-                
-                const matchesFilter = (currentFilter === 'all' || itemType === currentFilter);
-                const matchesSearch = itemName.includes(query);
+  const groups = document.querySelectorAll('.os-group');
+  groups.forEach(group => {
+    let hasVisibleItems = false;
+    const items = group.querySelectorAll('.os-item');
 
-                if (matchesFilter && matchesSearch) {
-                    item.style.display = 'flex';
-                    visibleItemsInGroup++;
-                } else {
-                    item.style.display = 'none';
-                }
-            });
+    items.forEach(item => {
+      const itemType = item.getAttribute('data-type');
+      if (type === 'all' || itemType === type) {
+        item.style.display = 'flex';
+        hasVisibleItems = true;
+      } else {
+        item.style.display = 'none';
+      }
+    });
 
-            // إخفاء الحرف إذا لم تكن هناك نتائج ظاهرة تحته
-            if (visibleItemsInGroup > 0) {
-                group.style.display = 'block';
-            } else {
-                group.style.display = 'none';
-            }
-        });
+    if (hasVisibleItems) {
+      group.style.display = 'block';
+    } else {
+      group.style.display = 'none';
     }
-</script>
+  });
+}
 
-</body>
-</html><!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مركز تحميل الأنظمة - تطبيق آدم</title>
-    <style>
-        /* التنسيقات العامة للموقع */
-        body { font-family: sans-serif; background: #0f172a; color: #f8fafc; padding: 0; margin: 0; text-align: center; }
-        
-        /* --- تصميم الهيدر (Header) الجديد --- */
-        .site-header {
-            background: #1e293b;
-            border-bottom: 1px solid #334155;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .header-logo {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: #2563eb;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .header-logo span {
-            color: #f59e0b;
-        }
-        .header-nav {
-            display: flex;
-            gap: 20px;
-        }
-        .nav-link {
-            color: #94a3b8;
-            text-decoration: none;
-            font-size: 0.95rem;
-            font-weight: 500;
-            transition: color 0.2s;
-        }
-        .nav-link:hover, .nav-link.active {
-            color: #f8fafc;
-        }
+function searchOS() {
+  const query = document.getElementById('search').value.toLowerCase();
+  const groups = document.querySelectorAll('.os-group');
 
-        /* حاوية المحتوى الرئيسي */
-        .main-content { padding: 30px 20px; }
-        .container { max-width: 800px; margin: 0 auto; background: #1e293b; padding: 20px; border-radius: 15px; border: 1px solid #334155; }
-        
-        /* تصميم صندوق الملاحظات */
-        .info-box { background: #1e293b; border-right: 5px solid #2563eb; padding: 15px; text-align: right; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .info-box.alert { border-right-color: #f59e0b; }
-        .info-box h4 { margin-top: 0; color: #f59e0b; font-size: 1.1rem; }
-        .info-box p { margin: 5px 0; font-size: 0.95rem; line-height: 1.6; }
-        .info-box ul { margin: 5px 0; padding-right: 20px; font-size: 0.95rem; }
-        
-        /* أزرار التبويبات والبحث */
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; flex-wrap: wrap; }
-        .tab-btn { padding: 10px 15px; cursor: pointer; background: #334155; color: white; border: none; border-radius: 5px; font-weight: bold; transition: background 0.2s; }
-        .tab-btn:hover, .tab-btn.active { background: #2563eb; }
-        
-        input { width: 100%; padding: 15px; border-radius: 10px; border: 1px solid #475569; background: #0f172a; color: white; margin-bottom: 20px; box-sizing: border-box; text-align: right; }
-        .os-group { text-align: right; margin-top: 20px; }
-        .letter-header { color: #f59e0b; border-bottom: 2px solid #334155; padding-bottom: 5px; margin-bottom: 10px; }
-        .os-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #1e293b; border-bottom: 1px solid #334155; }
-        .btn { background: #2563eb; padding: 6px 18px; border-radius: 5px; text-decoration: none; color: white; font-size: 0.9rem; font-weight: bold; transition: background 0.2s; }
-        .btn:hover { background: #1d4ed8; }
+  groups.forEach(group => {
+    let hasVisibleItems = false;
+    const items = group.querySelectorAll('.os-item');
 
-        /* شاشات الهواتف الذكية للهيدر */
-        @media (max-width: 600px) {
-            .site-header { flex-direction: column; gap: 10px; padding: 15px; }
-            .header-nav { gap: 15px; }
-        }
-    </style>
-</head>
-<body>
+    items.forEach(item => {
+      const name = item.getAttribute('data-name');
+      if (name.includes(query)) {
+        item.style.display = 'flex';
+        hasVisibleItems = true;
+      } else {
+        item.style.display = 'none';
+      }
+    });
 
-<!-- الهيدر الجديد والمحاذاة التلقائية -->
-<header class="site-header">
-    <a href="#" class="header-logo">📱 تطبيق <span>آدم</span></a>
-    <nav class="header-nav">
-        <a href="#" class="nav-link active">الرئيسية</a>
-        <a href="https://archlinux.org" target="_blank" class="nav-link">موسوعة لينكس</a>
-        <a href="#" class="nav-link">اتصل بنا</a>
-    </nav>
-</header>
-
-<div class="main-content">
-    <div class="container">
-        <h2>مركز تحميل أنظمة التشغيل الرسمية</h2>
-        
-        <!-- قسم الملاحظات والنصائح الجديد -->
-        <div class="info-box alert">
-            <h4>🛡️ تنبيه للأمان والحماية</h4>
-            <p>إذا أردت تنزيل نظام تشغيل <strong>أصلي ومحمي 100%</strong>، فمن فضلك اذهب دائماً إلى <strong>الموقع الرسمي</strong> المرفق بجانب كل نظام.</p>
-        </div>
-
-        <div class="info-box">
-            <h4>💿 نصيحة لحرق الأنظمة على الفلاشة (USB)</h4>
-            <ul>
-                <li>إذا كنت تستخدم نظام <strong>الويندوز (Windows)</strong>: للحرق استخدم برنامج <strong>Rufus</strong> أو <strong>Ventoy</strong>.</li>
-                <li>إذا كنت تستخدم نظام <strong>اللينكس (Linux)</strong>: أفضل شيء للحرق هو <strong>Ventoy</strong>.</li>
-            </ul>
-        </div>
-        
-        <div class="tabs">
-            <button class="tab-btn active" onclick="filterOS('all', this)">الكل</button>
-            <button class="tab-btn" onclick="filterOS('windows', this)">Windows</button>
-            <button class="tab-btn" onclick="filterOS('linux', this)">Linux</button>
-            <button class="tab-btn" onclick="filterOS('bsd', this)">BSD</button>
-            <button class="tab-btn" onclick="filterOS('unix', this)">Unix / DOS</button>
-        </div>
-
-        <input type="text" id="search" placeholder="ابحث عن نظام تشغيل..." onkeyup="searchOS()">
-
-        <div id="list">
-            <!-- حرف A -->
-            <div class="os-group" data-letter="A">
-                <h3 class="letter-header">حرف A</h3>
-                <div class="os-item" data-type="linux" data-name="arch linux">Arch Linux <a href="https://archlinux.org/download/" target="_blank" class="btn">Download</a></div>
-            </div>
-
-            <!-- حرف D -->
-            <div class="os-group" data-letter="D">
-                <h3 class="letter-header">حرف D</h3>
-                <div class="os-item" data-type="linux" data-name="debian">Debian Linux <a href="https://www.debian.org/distrib/" target="_blank" class="btn">Download</a></div>
-                <div class="os-item" data-type="bsd" data-name="dragonfly bsd">DragonFly BSD (نظام التنين) <a href="https://www.dragonflybsd.org/download/" target="_blank" class="btn">Download</a></div>
-            </div>
-
-            <!-- حرف F -->
-            <div class="os-group" data-letter="F">
-                <h3 class="letter-header">حرف F</h3>
-                <div class="os-item" data-type="bsd" data-name="freebsd">FreeBSD (قوي وعالي الأداء) <a href="https://www.freebsd.org/where/" target="_blank" class="btn">Download</a></div>
-                <div class="os-item" data-type="unix" data-name="freedos">FreeDOS (النظام المفتوح) <a href="https://www.freedos.org/download/" target="_blank" class="btn">Download</a></div>
-            </div>
-
-            <!-- حرف L -->
-            <div class="os-group" data-letter="L">
-                <h3 class="letter-header">حرف L</h3>
-                <div class="os-item" data-type="linux" data-name="linux mint">Linux Mint <a href="https://linuxmint.com/download.php" target="_blank" class="btn">Download</a></div>
-            </div>
-            
-            <!-- حرف W -->
-            <div class="os-group" data-letter="W">
-                <h3 class="letter-header">حرف W</h3>
-                <div class="os-item" data-type="windows" data-name="windows 11">Windows 11 <a href="https://www.microsoft.com/software-download/windows11" target="_blank" class="btn">Download</a></div>
-                <div class="os-item" data-type="windows" data-name="windows 10">Windows 10 <a href="https://www.microsoft.com/software-download/windows10" target="_blank" class="btn">Download</a></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    let currentFilter = 'all';
-
-    // دالة الفلترة عبر الأزرار
-    function filterOS(type, btn) {
-        currentFilter = type;
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        updateList();
+    if (hasVisibleItems) {
+      group.style.display = 'block';
+    } else {
+      group.style.display = 'none';
     }
+  });
+}
 
-    // دالة البحث
-    function searchOS() {
-        updateList();
+/* 3. مقارنة الأنظمة ومساعد الدردشة الذكي */
+let recognition;
+if ('webkitSpeechRecognition' in window) {
+  recognition = new webkitSpeechRecognition();
+  recognition.continuous = false;
+  recognition.interimResults = true;
+  recognition.lang = 'ar-SA';
+
+  recognition.onstart = function() {
+    document.getElementById('listeningStatus').style.display = 'block';
+    document.getElementById('micBtn').classList.add('listening');
+  };
+
+  recognition.onerror = function(event) {
+    console.error(event);
+  };
+
+  recognition.onend = function() {
+    document.getElementById('listeningStatus').style.display = 'none';
+    document.getElementById('micBtn').classList.remove('listening');
+  };
+
+  recognition.onresult = function(event) {
+    let interimTranscript = '';
+    let finalTranscript = '';
+
+    for (let i = event.resultIndex; i < event.results.length; ++i) {
+      if (event.results[i].isFinal) {
+        finalTranscript += event.results[i][0].transcript;
+      } else {
+        interimTranscript += event.results[i][0].transcript;
+      }
     }
-
-    // تحديث القائمة بناء على الفلتر والبحث
-    function updateList() {
-        const query = document.getElementById('search').value.toLowerCase().trim();
-        const groups = document.querySelectorAll('.os-group');
-
-        groups.forEach(group => {
-            const items = group.querySelectorAll('.os-item');
-            let visibleItemsInGroup = 0;
-
-            items.forEach(item => {
-                const itemType = item.getAttribute('data-type');
-                const itemName = item.getAttribute('data-name');
-                
-                const matchesFilter = (currentFilter === 'all' || itemType === currentFilter);
-                const matchesSearch = itemName.includes(query);
-
-                if (matchesFilter && matchesSearch) {
-                    item.style.display = 'flex';
-                    visibleItemsInGroup++;
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-
-            // إخفاء الحرف إذا لم تكن هناك نتائج ظاهرة تحته
-            if (visibleItemsInGroup > 0) {
-                group.style.display = 'block';
-            } else {
-                group.style.display = 'none';
-            }
-        });
+    document.getElementById('liveTranscript').innerText = interimTranscript || finalTranscript;
+    if (finalTranscript) {
+      document.getElementById('chatInput').value = finalTranscript;
     }
+  };
+}
+
+function toggleVoiceSearch() {
+  if (!recognition) {
+    alert("عذراً، متصفحك الحالي لا يدعم التعرف على الصوت.");
+    return;
+  }
+  recognition.start();
+}
+
+function handleChatSubmit() {
+  const inputEl = document.getElementById('chatInput');
+  const query = inputEl.value.trim();
+  if (!query) return;
+
+  // إضافة رسالة المستخدم للدردشة
+  appendChatMessage("أنت", query, "#cbd5e1");
+  inputEl.value = "";
+
+  // توليد رد المساعد الآلي
+  setTimeout(() => {
+    const reply = generateBotReply(query);
+    appendChatMessage("[مساعد houseOS]", reply, "#f59e0b");
+  }, 600);
+}
+
+function appendChatMessage(sender, text, color) {
+  const chatLog = document.getElementById('chatLog');
+  const msg = document.createElement('div');
+  msg.innerHTML = `<span style="color: ${color}; font-weight: bold;">${sender}:</span> ${text}`;
+  chatLog.appendChild(msg);
+  chatLog.scrollTop = chatLog.scrollHeight;
+}
+
+function generateBotReply(query) {
+  const q = query.toLowerCase();
+  
+  if (q.includes("قارن") || q.includes("مقارنة") || q.includes("الفرق بين")) {
+    if ((q.includes("ubuntu") || q.includes("أوبونتو") || q.includes("linux") || q.includes("لينكس")) && (q.includes("windows") || q.includes("ويندوز"))) {
+      return `مقارنة سريعة بين <strong>Ubuntu (Linux)</strong> و <strong>Windows 11</strong>:<br>
+      • <strong>الأمان:</strong> لينكس يتفوق بشكل هائل لقلة الفيروسات وهندسته الآمنة، بينما ويندوز مستهدف دائمًا بالثغرات.<br>
+      • <strong>الألعاب:</strong> ويندوز هو الملك بلا منازع لتوافق كافة الألعاب، لكن لينكس تطور كثيراً بفضل محرك Proton من Steam.<br>
+      • <strong>الاستهلاك:</strong> Ubuntu أخف بكثير على الرام والمعالج مقارنة بويندوز 11.<br>
+      • <strong>السعر:</strong> Ubuntu مجاني ومفتوح المصدر بالكامل، ويندوز يتطلب ترخيصاً مدفوعاً.`;
+    }
+    if (q.includes("tails") || q.includes("تيلز")) {
+      return `<strong>Tails OS</strong> هو نظام مصمم خصيصاً للتخفي والأمان الفائق وحماية الخصوصية. يعمل بالكامل من الذاكرة العشوائية (RAM) دون ترك أي أثر على الهارد ديسك، ويجبر جميع الاتصالات على المرور بشبكة Tor المجهولة. مقارنة بـ Windows أو Linux العادي، فهو غير صالح للاستخدام اليومي أو الألعاب، بل للعمل الحساس فقط.`;
+    }
+    if (q.includes("bsd") || q.includes("برمجيات ب س د")) {
+      return `أنظمة <strong>BSD</strong> (مثل FreeBSD و OpenBSD) هي أنظمة شبيهة بيونكس (Unix-like). تتميز باستقرارها الشديد في إدارة الملقبات (Servers) وشبكات الأمان، وهي أكثر تماسكاً من Linux لأن النظام يُطور كحزمة واحدة وليس كتوزيعات مجمعة. لكن دعم البرامج المكتبية والألعاب فيها أضعف بكثير من لينكس وويندوز.`;
+    }
+  }
+
+  if (q.includes("ويندوز 11") || q.includes("windows 11")) {
+    return "ويندوز 11 هو أحدث أنظمة مايكروسوفت، يتميز بواجهة عصرية ودعم لتطبيقات الأندرويد، ولكنه يتطلب مواصفات تشغيل صارمة مثل شريحة TPM 2.0 ومعالجات حديثة نسيباً.";
+  }
+  
+  if (q.includes("أفضل نظام") || q.includes("انصحني")) {
+    return "أفضل نظام يعتمد تماماً على حاجتك! للألعاب وصناعة المحتوى التجاري ننصح بـ <strong>Windows 11</strong>. للبرمجة والأجهزة الضعيفة والاستقرار ننصح بـ <strong>Ubuntu/Linux Mint</strong>. للأمان والخصوصية القصوى ننصح بـ <strong>Tails OS</strong>.";
+  }
+
+  return "سؤال جميل! أنا أتعلم باستمرار. يمكنك سؤالي عن مقارنات محددة بين الأنظمة مثل (الويندوز، اللينكس، BSD، أو Tails OS) وسأجيبك فوراً بالحقائق والخصائص الفنية.";
+}
+
+// تشغيل ضغط زر الإرسال عند الضغط على Enter في حقل الدردشة
+document.getElementById("chatInput").addEventListener("keypress", function(event) {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    handleChatSubmit();
+  }
+});
+
+/* 4. الكود المصدري */
+let currentHash = "";
+function loadSourceCode() {
+  // الحصول على الكود المصدري للصفحة الحالية بالكامل
+  const source = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+  document.getElementById('sourceCodeBox').innerText = source;
+
+  // حساب بصمة SHA-256 للملف الحالي ديناميكياً وعرضها
+  const encoder = new TextEncoder();
+  const data = encoder.encode(source);
+  crypto.subtle.digest("SHA-256", data).then(hashBuffer => {
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    currentHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    document.getElementById('sha256Value').innerText = currentHash;
+  });
+}
+
+function downloadSourceCode() {
+  const source = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+  const blob = new Blob([source], { type: "text/html" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = "houseOS.html";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* 5. التحقق من سلامة الأيزو (حساب البصمات الحقيقي داخل المتصفح) */
+let calculatedHash = "";
+function calculateFileHash(input) {
+  const file = input.files[0];
+  const statusEl = document.getElementById('isoStatus');
+  const resultEl = document.getElementById('matchResult');
+  resultEl.innerText = "";
+
+  if (!file) {
+    statusEl.innerText = "اختر ملفاً لحساب بصمته...";
+    return;
+  }
+
+  statusEl.innerText = "جاري قراءة الملف وحساب البصمة (SHA-256)... قد يستغرق ذلك ثوانٍ معدودة للأحجام الكبيرة...";
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const buffer = e.target.result;
+    crypto.subtle.digest("SHA-256", buffer).then(hashBuffer => {
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      calculatedHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      statusEl.innerHTML = `<strong>SHA-256:</strong> ${calculatedHash}`;
+      compareHashes();
+    }).catch(err => {
+      statusEl.innerText = "حدث خطأ أثناء حساب البصمة.";
+      console.error(err);
+    });
+  };
+
+  // قراءة الملف كـ ArrayBuffer لحساب البصمة الرياضية
+  reader.readAsArrayBuffer(file);
+}
+
+function compareHashes() {
+  const officialHash = document.getElementById('officialHashInput').value.trim().toLowerCase();
+  const resultEl = document.getElementById('matchResult');
+
+  if (!calculatedHash) {
+    resultEl.innerText = "";
+    return;
+  }
+
+  if (!officialHash) {
+    resultEl.innerText = "";
+    return;
+  }
+
+  if (calculatedHash === officialHash) {
+    resultEl.innerHTML = "<span style='color: #22c55e;'>🟢 البصمات متطابقة! ملف الأيزو سليم وأصلي 100% ومحمي من أي تعديل.</span>";
+  } else {
+    resultEl.innerHTML = "<span style='color: #ef4444;'>🔴 تحذير: البصمات غير متطابقة! الملف قد يكون تالفاً أو تم التعديل عليه. لا تقم بتثبيته!</span>";
+  }
+}
 </script>
 
 </body>
