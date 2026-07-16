@@ -146,8 +146,8 @@
   </div>
 
   <div class="desktop-icon" style="top:420px; right:20px;" onclick="openWindow('browser')">
-    <div class="icon-glyph" style="background:#16a34a;">🌐</div>
-    المتصفح
+    <div class="icon-glyph" style="background:radial-gradient(circle at 35% 30%, #ffb35c, #ff7c1f 55%, #d63b1f);">🦊</div>
+    Firefox
   </div>
 
   <!-- شريط المهام -->
@@ -164,7 +164,7 @@
     <div class="sm-item" onclick="openWindow('terminal'); toggleStartMenu()">📟 الطرفية</div>
     <div class="sm-item" onclick="openWindow('files'); toggleStartMenu()">🗂️ الملفات</div>
     <div class="sm-item" onclick="openWindow('settings'); toggleStartMenu()">⚙️ الإعدادات</div>
-    <div class="sm-item" onclick="openWindow('browser'); toggleStartMenu()">🌐 المتصفح</div>
+    <div class="sm-item" onclick="openWindow('browser'); toggleStartMenu()">🦊 Firefox</div>
   </div>
 
   <!-- قائمة الكليك اليمين -->
@@ -239,10 +239,13 @@ const appData = {
   terminal: {
     title: '📟 الطرفية',
     body: `
-      <div id="termOutput" style="background:#000; color:#22c55e; font-family:monospace; padding:10px; border-radius:8px; height:180px; overflow-y:auto; margin-bottom:8px; text-align:left; direction:ltr;">ALphoenixa OS Terminal v1.0
+      <div id="termOutput" style="background:#000; color:#22c55e; font-family:monospace; font-size:12px; padding:10px; border-radius:8px; height:200px; overflow-y:auto; margin-bottom:8px; text-align:left; direction:ltr;">ALphoenixa OS 1.0 LTS (based on Ubuntu-style environment)
 Type "help" for a list of commands.
 </div>
-      <input id="termInput" type="text" placeholder="اكتب أمراً... مثلاً help" style="width:100%; padding:8px; border-radius:6px; border:1px solid #334155; background:#0f172a; color:#e2e8f0; direction:ltr; text-align:left;">
+      <div style="display:flex; align-items:center; gap:6px; background:#0f172a; border:1px solid #334155; border-radius:6px; padding:6px 8px;">
+        <span id="termPromptLabel" style="color:#22c55e; font-family:monospace; font-size:12px; direction:ltr;">adam@alphoenixa:~$</span>
+        <input id="termInput" type="text" style="flex:1; background:transparent; border:none; outline:none; color:#e2e8f0; font-family:monospace; font-size:12px; direction:ltr; text-align:left;">
+      </div>
     `
   },
   files: {
@@ -261,33 +264,77 @@ Type "help" for a list of commands.
     title: '⚙️ الإعدادات',
     body: `
       <label style="display:block; margin-bottom:10px;">لون خلفية سطح المكتب:</label>
-      <div style="display:flex; gap:10px;">
+      <div style="display:flex; gap:10px; margin-bottom:20px;">
         <button onclick="setWallpaper('radial-gradient(circle at 30% 20%, #2b1055, #0b0f1a 70%)')" style="width:36px; height:36px; border-radius:8px; border:none; background:#2b1055; cursor:pointer;"></button>
         <button onclick="setWallpaper('radial-gradient(circle at 30% 20%, #0f3d3e, #0b0f1a 70%)')" style="width:36px; height:36px; border-radius:8px; border:none; background:#0f3d3e; cursor:pointer;"></button>
         <button onclick="setWallpaper('radial-gradient(circle at 30% 20%, #5c1a1a, #0b0f1a 70%)')" style="width:36px; height:36px; border-radius:8px; border:none; background:#5c1a1a; cursor:pointer;"></button>
         <button onclick="setWallpaper('radial-gradient(circle at 30% 20%, #1a2c5c, #0b0f1a 70%)')" style="width:36px; height:36px; border-radius:8px; border:none; background:#1a2c5c; cursor:pointer;"></button>
       </div>
+
+      <label style="display:block; margin-bottom:10px; font-weight:700;">🐧 معلومات النظام (Linux)</label>
+      <div style="background:#0f172a; border-radius:8px; padding:12px; font-family:monospace; font-size:11px; color:#94a3b8; line-height:1.8;">
+        <div><span style="color:#22c55e;">OS:</span> ALphoenixa OS 1.0 LTS</div>
+        <div><span style="color:#22c55e;">Kernel:</span> 6.8.0-simulated</div>
+        <div><span style="color:#22c55e;">Base:</span> Ubuntu-style (Debian family)</div>
+        <div><span style="color:#22c55e;">Package Manager:</span> APT (simulated)</div>
+        <div><span style="color:#22c55e;">Shell:</span> bash (simulated)</div>
+        <div><span style="color:#22c55e;">Desktop Env:</span> ALphoenixa Desktop</div>
+        <div><span style="color:#22c55e;">User:</span> adam</div>
+      </div>
+      <p style="color:#64748b; font-size:11px; margin-top:8px;">هذه معلومات وهمية للعرض فقط، ما تعكس نظام تشغيل جهازك الفعلي.</p>
     `
   },
   browser: {
-    title: '🌐 المتصفح',
+    title: '🦊 Firefox',
     body: `
       <div style="display:flex; gap:6px; margin-bottom:10px;">
-        <input id="browserUrl" type="text" value="alphoenixa://home" style="flex:1; padding:8px; border-radius:6px; border:1px solid #334155; background:#0f172a; color:#e2e8f0; direction:ltr; text-align:left; font-size:12px;">
-        <button onclick="loadBrowserPage()" style="padding:8px 14px; border-radius:6px; border:none; background:#2563eb; color:#fff; cursor:pointer; font-size:12px;">اذهب</button>
+        <input id="browserUrl" type="text" value="about:home" style="flex:1; padding:8px; border-radius:6px; border:1px solid #334155; background:#0f172a; color:#e2e8f0; direction:ltr; text-align:left; font-size:12px;">
+        <button onclick="loadBrowserPage()" style="padding:8px 14px; border-radius:6px; border:none; background:#ff7c1f; color:#fff; cursor:pointer; font-size:12px;">اذهب</button>
       </div>
       <div id="browserContent" style="background:#0f172a; border-radius:8px; padding:16px; min-height:120px;">
-        <h3 style="margin-top:0;">🌐 صفحة ALphoenixa الرئيسية</h3>
-        <p style="color:#94a3b8; font-size:12px;">هذا متصفح وهمي للعرض فقط، لا يتصل بالإنترنت الحقيقي ولا يفتح مواقع فعلية. جرّب تكتب أي عنوان واضغط "اذهب".</p>
+        <h3 style="margin-top:0;">🦊 مرحباً بك في Firefox</h3>
+        <p style="color:#94a3b8; font-size:12px;">هذا متصفح Firefox وهمي للعرض فقط داخل ALphoenixa OS، لا يتصل بالإنترنت الحقيقي ولا يفتح مواقع فعلية. جرّب تكتب أي عنوان واضغط "اذهب".</p>
       </div>
     `
   }
 };
 
+const fakeSites = {
+  google: { icon: '🔍', title: 'Google (وهمي)', body: `
+    <div style="text-align:center; padding:20px 0;">
+      <div style="font-size:28px; font-weight:700; margin-bottom:14px;">
+        <span style="color:#4285F4;">G</span><span style="color:#EA4335;">o</span><span style="color:#FBBC05;">o</span><span style="color:#4285F4;">g</span><span style="color:#34A853;">l</span><span style="color:#EA4335;">e</span>
+      </div>
+      <input placeholder="بحث وهمي..." style="width:70%; padding:10px 16px; border-radius:20px; border:1px solid #334155; background:#0f172a; color:#e2e8f0;">
+    </div>` },
+  youtube: { icon: '▶️', title: 'YouTube (وهمي)', body: `
+    <div style="color:#ff0000; font-weight:700; font-size:20px; margin-bottom:10px;">▶ YouTube</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+      <div style="background:#0f172a; border-radius:8px; height:60px; display:flex; align-items:center; justify-content:center; color:#64748b; font-size:11px;">فيديو وهمي 1</div>
+      <div style="background:#0f172a; border-radius:8px; height:60px; display:flex; align-items:center; justify-content:center; color:#64748b; font-size:11px;">فيديو وهمي 2</div>
+    </div>` },
+  wikipedia: { icon: '📖', title: 'ويكيبيديا (وهمي)', body: `
+    <h3 style="margin-top:0; font-family:serif;">ويكيبيديا، الموسوعة الحرة</h3>
+    <p style="color:#94a3b8; font-size:12px;">هذه محاكاة بسيطة لصفحة ويكيبيديا. المحتوى هنا وهمي بالكامل وليس مأخوذاً من الموقع الحقيقي.</p>` },
+  github: { icon: '🐙', title: 'GitHub (وهمي)', body: `
+    <div style="font-weight:700; font-size:18px; margin-bottom:10px;">🐙 GitHub</div>
+    <div style="background:#0f172a; border-radius:8px; padding:12px; font-family:monospace; font-size:12px; color:#22c55e;">$ git clone your-project.git</div>` }
+};
+
 function loadBrowserPage() {
-  const url = document.getElementById('browserUrl').value.trim();
+  const rawUrl = document.getElementById('browserUrl').value.trim();
   const content = document.getElementById('browserContent');
-  content.innerHTML = `<h3 style="margin-top:0;">🌐 ${url || 'صفحة فارغة'}</h3><p style="color:#94a3b8; font-size:12px;">هذه صفحة وهمية تمثل "${url}" — المتصفح لا يتصل فعلياً بالإنترنت.</p>`;
+  if (!rawUrl) { content.innerHTML = `<h3 style="margin-top:0;">صفحة فارغة</h3>`; return; }
+
+  const lower = rawUrl.toLowerCase();
+  const match = Object.keys(fakeSites).find(key => lower.includes(key));
+
+  if (match) {
+    const site = fakeSites[match];
+    content.innerHTML = `<div>${site.body}</div><p style="color:#64748b; font-size:11px; margin-top:14px; border-top:1px solid #232b45; padding-top:8px;">${site.icon} محاكاة لموقع ${match} — Firefox هنا لا يتصل فعلياً بالإنترنت.</p>`;
+  } else {
+    content.innerHTML = `<h3 style="margin-top:0;">🦊 ${rawUrl}</h3><p style="color:#94a3b8; font-size:12px;">هذه صفحة وهمية تمثل "${rawUrl}" — Firefox هنا لا يتصل فعلياً بالإنترنت. جرّب تكتب google أو youtube أو wikipedia أو github لترى محاكاة مخصصة.</p>`;
+  }
 }
 
 const wallpapers = [
@@ -471,25 +518,101 @@ function makeDraggable(win, handle) {
 function setupTerminal(win) {
   const input = win.querySelector('#termInput');
   const output = win.querySelector('#termOutput');
+  const promptLabel = win.querySelector('#termPromptLabel');
+  input.focus();
+
   input.addEventListener('keyup', (e) => {
     if (e.key !== 'Enter') return;
-    const cmd = input.value.trim();
-    output.innerHTML += `\n$ ${cmd}\n`;
-    output.innerHTML += runCommand(cmd) + '\n';
+    const cmd = input.value;
+    output.innerHTML += `\n${promptLabel.textContent} ${escapeHtml(cmd)}\n`;
+    const result = runCommand(cmd.trim());
+    if (result !== null) output.innerHTML += result + '\n';
+    promptLabel.textContent = `adam@alphoenixa:${fakeFS.cwd === '/home/adam' ? '~' : fakeFS.cwd}$`;
     input.value = '';
     output.scrollTop = output.scrollHeight;
   });
 }
 
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* ===== نظام ملفات وهمي بسيط لمحاكاة أوامر Linux ===== */
+const fakeFS = {
+  cwd: '/home/adam',
+  dirs: {
+    '/home/adam': ['Documents', 'Downloads', 'Pictures', 'welcome.txt'],
+    '/home/adam/Documents': [],
+    '/home/adam/Downloads': ['houseOS.html'],
+    '/home/adam/Pictures': []
+  }
+};
+
 function runCommand(cmd) {
-  const c = cmd.toLowerCase();
-  if (c === 'help') return 'Available commands: help, about, date, clear, echo <text>';
-  if (c === 'about') return 'ALphoenixa OS - a simulated desktop built with HTML/CSS/JS.';
-  if (c === 'date') return new Date().toString();
-  if (c === 'clear') { setTimeout(() => { document.getElementById('termOutput').innerHTML = ''; }, 0); return ''; }
-  if (c.startsWith('echo ')) return cmd.slice(5);
-  if (c === '') return '';
-  return `command not found: ${cmd}`;
+  if (cmd === '') return '';
+  const parts = cmd.split(' ').filter(Boolean);
+  const base = parts[0];
+  const args = parts.slice(1);
+
+  switch (base) {
+    case 'help':
+      return 'Available commands: help, about, date, clear, echo, whoami, pwd, ls, cd, mkdir, touch, cat, uname -a, neofetch, apt, sudo, history';
+    case 'about':
+      return 'ALphoenixa OS - a simulated desktop built with HTML/CSS/JS.';
+    case 'date':
+      return new Date().toString();
+    case 'clear':
+      setTimeout(() => { document.getElementById('termOutput').innerHTML = ''; }, 0);
+      return null;
+    case 'echo':
+      return args.join(' ');
+    case 'whoami':
+      return 'adam';
+    case 'pwd':
+      return fakeFS.cwd;
+    case 'ls':
+      return (fakeFS.dirs[fakeFS.cwd] || []).join('  ') || '(empty)';
+    case 'cd': {
+      if (!args[0] || args[0] === '~') { fakeFS.cwd = '/home/adam'; return ''; }
+      if (args[0] === '..') {
+        const parts2 = fakeFS.cwd.split('/');
+        parts2.pop();
+        fakeFS.cwd = parts2.join('/') || '/';
+        return '';
+      }
+      const target = fakeFS.cwd + '/' + args[0];
+      if (fakeFS.dirs[target] !== undefined) { fakeFS.cwd = target; return ''; }
+      return `bash: cd: ${args[0]}: No such file or directory`;
+    }
+    case 'mkdir':
+      if (!args[0]) return 'mkdir: missing operand';
+      fakeFS.dirs[fakeFS.cwd] = fakeFS.dirs[fakeFS.cwd] || [];
+      fakeFS.dirs[fakeFS.cwd].push(args[0]);
+      fakeFS.dirs[fakeFS.cwd + '/' + args[0]] = [];
+      return '';
+    case 'touch':
+      if (!args[0]) return 'touch: missing operand';
+      fakeFS.dirs[fakeFS.cwd] = fakeFS.dirs[fakeFS.cwd] || [];
+      fakeFS.dirs[fakeFS.cwd].push(args[0]);
+      return '';
+    case 'cat':
+      if (args[0] === 'welcome.txt') return 'Welcome to ALphoenixa OS — enjoy exploring!';
+      return args[0] ? `cat: ${args[0]}: No such file or directory` : 'cat: missing operand';
+    case 'uname':
+      return args[0] === '-a'
+        ? 'ALphoenixa 6.8.0-simulated x86_64 GNU/Linux'
+        : 'ALphoenixa';
+    case 'neofetch':
+      return `adam@alphoenixa\n---------------\nOS: ALphoenixa OS 1.0 LTS\nKernel: 6.8.0-simulated\nShell: bash (simulated)\nDE: ALphoenixa Desktop`;
+    case 'apt':
+      if (args[0] === 'update') return 'Reading package lists... Done (simulated)';
+      if (args[0] === 'install') return `Simulated install of: ${args.slice(1).join(' ') || '(no package specified)'}`;
+      return 'apt: usage: apt update | apt install <package>';
+    case 'sudo':
+      return args.length ? runCommand(args.join(' ')) : 'usage: sudo <command>';
+    default:
+      return `bash: ${base}: command not found`;
+  }
 }
 </script>
 
