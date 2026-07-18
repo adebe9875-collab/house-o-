@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALphoenixa OS</title>
+<style>
+  * { box-sizing: border-box; user-select: none; }
+  html, body {
+    margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+  }
+
+  /* ===== شاشة الإقلاع ===== */
+  #bootScreen {
+    position: fixed; inset: 0; background: #0b0f1a; color: #fff;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 9999; transition: opacity .6s ease;
+  }
+  #bootLogo {
+    font-size: 2.4rem; font-weight: 800; letter-spacing: 1px;
+    background: linear-gradient(90deg, #d70a53, #a80030);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    margin-bottom: 30px;
+  }
+  #bootBarTrack { width: 260px; height: 6px; background: #1e293b; border-radius: 10px; overflow: hidden; }
+  #bootBarFill { width: 0%; height: 100%; background: linear-gradient(90deg, #d70a53, #a80030); border-radius: 10px; transition: width .2s linear; }
+  #bootLabel { margin-top: 14px; font-size: 12px; color: #94a3b8; }
+
+  /* ===== سطح المكتب ===== */
+  #desktop {
+    position: fixed; inset: 0;
+    background: radial-gradient(circle at 30% 20%, #5c0f2a, #0b0f1a 70%);
+    display: none; overflow: hidden;
+  }
+
+  .desktop-icon {
+    position: absolute; width: 84px; text-align: center; color: #fff;
+    cursor: pointer; padding: 8px 4px; border-radius: 8px; font-size: 12px;
+  }
+  .desktop-icon:hover { background: rgba(255,255,255,0.08); }
+  .desktop-icon .icon-glyph {
+    width: 46px; height: 46px; margin: 0 auto 6px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; font-size: 22px;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.35);
+  }
+
+  /* ===== النوافذ ===== */
+  .app-window {
+    position: absolute; min-width: 300px; min-height: 200px;
+    background: #161b2c; border-radius: 12px; overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid #2a3350;
+    display: flex; flex-direction: column;
+  }
+  .window-titlebar {
+    background: #1f2740; padding: 10px 14px; display: flex; align-items: center;
+    justify-content: space-between; cursor: move; color: #e2e8f0; font-size: 13px; font-weight: 600;
+  }
+  .window-controls { display: flex; gap: 8px; }
+  .win-btn {
+    width: 14px; height: 14px; border-radius: 50%; border: none; cursor: pointer;
+  }
+  .win-close { background: #ef4444; }
+  .win-min { background: #f59e0b; }
+  .window-body {
+    flex: 1; padding: 16px; color: #e2e8f0; font-size: 13px; overflow-y: auto; text-align: right;
+  }
+
+  /* ===== شريط المهام ===== */
+  #taskbar {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 54px;
+    background: rgba(15,20,35,0.85); backdrop-filter: blur(10px);
+    display: flex; align-items: center; padding: 0 14px; gap: 10px;
+    border-top: 1px solid #2a3350; z-index: 500;
+  }
+  #startBtn {
+    background: linear-gradient(135deg, #d70a53, #a80030); border: none; color: #fff;
+    font-weight: 700; padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 13px;
+  }
+  #taskbarApps { display: flex; gap: 6px; flex: 1; }
+  .taskbar-app {
+    background: #1f2740; color: #cbd5e1; border: none; padding: 6px 12px; border-radius: 6px;
+    font-size: 12px; cursor: pointer;
+  }
+  #clock { color: #cbd5e1; font-size: 13px; direction: ltr; }
+
+  /* ===== قائمة ابدأ ===== */
+  #startMenu {
+    position: absolute; bottom: 60px; right: 14px; width: 240px;
+    background: #161b2c; border: 1px solid #2a3350; border-radius: 12px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5); display: none; z-index: 600; overflow: hidden;
+  }
+  #startMenu .sm-header {
+    padding: 14px; background: linear-gradient(135deg, #d70a53, #a80030);
+    color: #fff; font-weight: 700; font-size: 14px;
+  }
+  .sm-item {
+    padding: 12px 14px; color: #e2e8f0; font-size: 13px; cursor: pointer;
+    display: flex; align-items: center; gap: 10px; border-top: 1px solid #232b45;
+  }
+  .sm-item:hover { background: #1f2740; }
+
+  /* ===== قائمة الكليك اليمين ===== */
+  #contextMenu {
+    position: absolute; width: 200px; background: #161b2c; border: 1px solid #2a3350;
+    border-radius: 10px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); display: none; z-index: 700; overflow: hidden;
+  }
+  .ctx-item {
+    padding: 10px 14px; color: #e2e8f0; font-size: 13px; cursor: pointer;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .ctx-item:hover { background: #1f2740; }
+  .ctx-sep { height: 1px; background: #232b45; margin: 4px 0; }
+</style>
+</head>
+<body>
+
+<!-- شاشة تسجيل الدخول -->
+<div id="loginScreen" style="position:fixed; inset:0; background:#0b0f1a; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:10000;">
+  <div id="loginAvatar" style="width:84px; height:84px; border-radius:50%; background:linear-gradient(135deg,#d70a53,#a80030); display:flex; align-items:center; justify-content:center; font-size:30px; font-weight:700; margin-bottom:22px;">؟</div>
+  <div style="font-size:15px; color:#94a3b8; margin-bottom:16px;">إنشاء حساب على ALphoenixa OS</div>
+  <input id="loginName" type="text" placeholder="اسمك" style="width:240px; padding:12px 14px; border-radius:10px; border:1px solid #334155; background:#161b2c; color:#e2e8f0; text-align:center; margin-bottom:10px; direction:ltr;">
+  <input id="loginEmail" type="email" placeholder="بريدك الإلكتروني" style="width:240px; padding:12px 14px; border-radius:10px; border:1px solid #334155; background:#161b2c; color:#e2e8f0; text-align:center; margin-bottom:10px; direction:ltr;">
+  <input id="loginCountry" type="text" placeholder="بلدك (اختياري)" style="width:240px; padding:12px 14px; border-radius:10px; border:1px solid #334155; background:#161b2c; color:#e2e8f0; text-align:center; margin-bottom:12px; direction:ltr;">
+  <button id="loginBtn" style="width:240px; padding:12px; border-radius:10px; border:none; background:linear-gradient(135deg,#d70a53,#a80030); color:#fff; font-weight:700; cursor:pointer;">دخول</button>
+  <div style="font-size:11px; color:#64748b; margin-top:14px; max-width:260px; text-align:center;">تُحفظ بياناتك محلياً داخل هذا المتصفح فقط (localStorage) — لا تُرسل لأي سيرفر خارجي.</div>
+</div>
+
+<!-- شاشة الإقلاع -->
+<div id="bootScreen" style="display:none;">
+  <svg width="72" height="72" viewBox="0 0 100 100" style="margin-bottom:18px;">
+    <defs>
+      <linearGradient id="debSwirl" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#d70a53"/>
+        <stop offset="100%" stop-color="#a80030"/>
+      </linearGradient>
+    </defs>
+    <path d="M50 8 C72 8 88 26 88 48 C88 66 74 80 58 82 C68 74 74 62 74 50 C74 32 60 20 44 20 C28 20 16 32 16 48 C16 62 26 74 40 78 C22 76 8 60 8 42 C8 23 27 8 50 8 Z" fill="url(#debSwirl)"/>
+    <circle cx="50" cy="48" r="9" fill="#fff"/>
+  </svg>
+  <div id="bootLogo">ALphoenixa OS</div>
+  <div id="bootBarTrack"><div id="bootBarFill"></div></div>
+  <div id="bootLabel">جارٍ تحميل النظام...</div>
+</div>
+
+<!-- سطح المكتب -->
+<div id="desktop">
+
+  <div class="desktop-icon" style="top:20px; right:20px;" onclick="openWindow('about')">
+    <div class="icon-glyph" style="background:linear-gradient(135deg,#d70a53,#a80030);">🔥</div>
+    عن النظام
+  </div>
+
+  <div class="desktop-icon" style="top:120px; right:20px;" onclick="openWindow('terminal')">
+    <div class="icon-glyph" style="background:#0f172a; border:1px solid #334155;">📟</div>
+    الطرفية
+  </div>
+
+  <div class="desktop-icon" style="top:220px; right:20px;" onclick="openWindow('files')">
+    <div class="icon-glyph" style="background:#2563eb;">🗂️</div>
+    الملفات
+  </div>
+
+  <div class="desktop-icon" style="top:320px; right:20px;" onclick="openWindow('settings')">
+    <div class="icon-glyph" style="background:#475569;">⚙️</div>
+    الإعدادات
+  </div>
+
+  <div class="desktop-icon" style="top:420px; right:20px;" onclick="openWindow('browser')">
+    <div class="icon-glyph" style="background:transparent; box-shadow:none;">
+      <svg width="46" height="46" viewBox="0 0 100 100">
+        <defs>
+          <radialGradient id="fxGrad1" cx="35%" cy="30%" r="75%">
+            <stop offset="0%" stop-color="#ffcc4d"/>
+            <stop offset="45%" stop-color="#ff9500"/>
+            <stop offset="100%" stop-color="#d6301f"/>
+          </radialGradient>
+        </defs>
+        <circle cx="50" cy="50" r="46" fill="url(#fxGrad1)"/>
+        <path d="M50 20 C35 22 25 38 28 55 C30 68 40 78 50 80 C60 78 70 68 72 55 C75 38 65 22 50 20 Z" fill="#7c3aed" opacity="0.75"/>
+        <circle cx="50" cy="52" r="16" fill="#0b0f1a"/>
+        <circle cx="44" cy="49" r="3" fill="#fff"/>
+        <circle cx="56" cy="49" r="3" fill="#fff"/>
+      </svg>
+    </div>
+    Firefox
+  </div>
+
+  <div class="desktop-icon" style="top:420px; right:130px;" onclick="openWindow('brave')">
+    <div class="icon-glyph" style="background:#25242b;">
+      <svg width="26" height="26" viewBox="0 0 100 100"><path d="M50 6 L86 20 L80 62 L50 94 L20 62 L14 20 Z" fill="#fb542b"/></svg>
+    </div>
+    Brave
+  </div>
+
+  <!-- شريط المهام -->
+  <div id="taskbar">
+    <button id="startBtn" onclick="toggleStartMenu()">ابدأ</button>
+    <div id="taskbarApps"></div>
+    <button id="netBtn" title="الإنترنت متصل" onclick="toggleInternet()" style="background:#1f2740; border:none; color:#22c55e; width:36px; height:36px; border-radius:8px; cursor:pointer; font-size:15px;">📶</button>
+    <button id="vpnBtn" title="VPN غير متصل" onclick="toggleVPN()" style="background:#1f2740; border:none; color:#94a3b8; width:36px; height:36px; border-radius:8px; cursor:pointer; font-size:15px;">🔓</button>
+    <div id="clock">00:00</div>
+  </div>
+
+  <!-- قائمة ابدأ -->
+  <div id="startMenu">
+    <div class="sm-header">
+      ALphoenixa OS
+      <div id="smUserEmail" style="font-size:11px; font-weight:400; opacity:0.85; margin-top:2px; direction:ltr; text-align:right;"></div>
+    </div>
+    <div class="sm-item" onclick="openWindow('about'); toggleStartMenu()">🔥 عن النظام</div>
+    <div class="sm-item" onclick="openWindow('terminal'); toggleStartMenu()">📟 الطرفية</div>
+    <div class="sm-item" onclick="openWindow('files'); toggleStartMenu()">🗂️ الملفات</div>
+    <div class="sm-item" onclick="openWindow('settings'); toggleStartMenu()">⚙️ الإعدادات</div>
+    <div class="sm-item" onclick="openWindow('browser'); toggleStartMenu()">🌐 Firefox</div>
+    <div class="sm-item" onclick="openWindow('brave'); toggleStartMenu()">🛡️ Brave</div>
+    <div class="ctx-sep"></div>
+    <div class="sm-item" onclick="downloadAppSource(); toggleStartMenu()">⬇️ تحميل كود التطبيق</div>
+  </div>
+
+  <!-- قائمة الكليك اليمين -->
+  <div id="contextMenu">
+    <div class="ctx-item" onclick="randomWallpaper(); hideContextMenu()">🎨 تبديل الخلفية</div>
+    <div class="ctx-item" onclick="openWindow('terminal'); hideContextMenu()">📟 فتح الطرفية هنا</div>
+    <div class="ctx-item" onclick="openWindow('settings'); hideContextMenu()">⚙️ الإعدادات</div>
+    <div class="ctx-sep"></div>
+    <div class="ctx-item" onclick="refreshDesktop(); hideContextMenu()">🔄 تحديث سطح المكتب</div>
+  </div>
+
+</div>
+
+<script>
+/* ===== شاشة تسجيل الدخول ===== */
+function initials(nameOrEmail) {
+  const base = nameOrEmail.split('@')[0] || '?';
+  return base.slice(0, 2).toUpperCase();
+}
+
+function proceedToBoot() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('bootScreen').style.display = 'flex';
+  document.getElementById('bootScreen').style.opacity = '1';
+  const savedName = localStorage.getItem('alphoenixa_user_name');
+  const savedEmail = localStorage.getItem('alphoenixa_user_email');
+  const smEmail = document.getElementById('smUserEmail');
+  if (smEmail) smEmail.textContent = (savedName ? savedName + ' — ' : '') + (savedEmail || '');
+  startBoot();
+}
+
+(function checkLogin() {
+  const savedEmail = localStorage.getItem('alphoenixa_user_email');
+  if (savedEmail) {
+    proceedToBoot();
+  }
+})();
+
+document.getElementById('loginBtn').addEventListener('click', () => {
+  const nameInput = document.getElementById('loginName');
+  const emailInput = document.getElementById('loginEmail');
+  const countryInput = document.getElementById('loginCountry');
+  const name = nameInput.value.trim();
+  const email = emailInput.value.trim();
+  const country = countryInput.value.trim();
+
+  if (!name) { nameInput.style.border = '1px solid #ef4444'; return; }
+  if (!email || !email.includes('@')) { emailInput.style.border = '1px solid #ef4444'; return; }
+
+  localStorage.setItem('alphoenixa_user_name', name);
+  localStorage.setItem('alphoenixa_user_email', email);
+  if (country) localStorage.setItem('alphoenixa_user_country', country);
+  proceedToBoot();
+});
+
+function updateLoginAvatar() {
+  const name = document.getElementById('loginName').value.trim();
+  const email = document.getElementById('loginEmail').value.trim();
+  const source = name || email;
+  document.getElementById('loginAvatar').textContent = source ? initials(source) : '؟';
+}
+
+document.getElementById('loginName').addEventListener('input', (e) => {
+  updateLoginAvatar();
+  e.target.style.border = '1px solid #334155';
+});
+
+document.getElementById('loginEmail').addEventListener('input', (e) => {
+  updateLoginAvatar();
+  e.target.style.border = '1px solid #334155';
+});
+
+['loginName', 'loginEmail', 'loginCountry'].forEach(id => {
+  document.getElementById(id).addEventListener('keyup', (e) => {
+    if (e.key === 'Enter') document.getElementById('loginBtn').click();
+  });
+});
+
+/* ===== محاكاة الإقلاع ===== */
+let progress = 0;
+const fill = document.getElementById('bootBarFill');
+const label = document.getElementById('bootLabel');
+const messages = ['جارٍ تحميل النواة...', 'جارٍ تهيئة الذاكرة...', 'جارٍ تحميل واجهة سطح المكتب...', 'على وشك الانتهاء...'];
+
+function startBoot() {
+  progress = 0;
+  const bootInterval = setInterval(() => {
+    progress += Math.random() * 18 + 8;
+    if (progress >= 100) {
+      progress = 100;
+      clearInterval(bootInterval);
+      setTimeout(() => {
+        document.getElementById('bootScreen').style.opacity = '0';
+        setTimeout(() => {
+          document.getElementById('bootScreen').style.display = 'none';
+          document.getElementById('desktop').style.display = 'block';
+          startClock();
+          restoreOpenWindows();
+        }, 600);
+      }, 400);
+    }
+    fill.style.width = progress + '%';
+    label.textContent = messages[Math.min(Math.floor(progress / 26), messages.length - 1)];
+  }, 350);
+}
+
+/* ===== الساعة ===== */
+function startClock() {
+  const clockEl = document.getElementById('clock');
+  function tick() {
+    const now = new Date();
+    clockEl.textContent = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+  }
+  tick();
+  setInterval(tick, 1000);
+}
+
+/* ===== قائمة ابدأ ===== */
+function toggleStartMenu() {
+  const menu = document.getElementById('startMenu');
+  menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+}
+document.addEventListener('click', (e) => {
+  const menu = document.getElementById('startMenu');
+  const btn = document.getElementById('startBtn');
+  if (menu.style.display === 'block' && !menu.contains(e.target) && e.target !== btn) {
+    menu.style.display = 'none';
+  }
+});
+
+/* ===== محتوى التطبيقات الوهمية ===== */
+const appData = {
+  about: {
+    title: '🔥 عن النظام',
+    body: `<h3 style="margin-top:0;">ALphoenixa OS</h3>
+      <p>هذه نسخة تجريبية محاكية (Simulation) لنظام تشغيل، مبنية بالكامل بـ HTML وCSS وJavaScript داخل المتصفح.</p>
+      <p>هي ليست نظام تشغيل حقيقياً — لا تدير عتاداً فعلياً ولا تشغّل برامج حقيقية — لكنها تحاكي شكل وتجربة استخدام سطح مكتب حقيقي: شريط مهام، قائمة ابدأ، نوافذ قابلة للسحب، وتطبيقات وهمية.</p>`
+  },
+  terminal: {
+    title: '📟 الطرفية',
+    body: `
+      <div id="termOutput" style="background:#000; color:#22c55e; font-family:monospace; font-size:12px; padding:10px; border-radius:8px; height:200px; overflow-y:auto; margin-bottom:8px; text-align:left; direction:ltr;">ALphoenixa OS 1.0 (Debian-based)
+Type "help" for a list of commands.
+</div>
+      <div style="display:flex; align-items:center; gap:6px; background:#0f172a; border:1px solid #334155; border-radius:6px; padding:6px 8px;">
+        <span id="termPromptLabel" style="color:#22c55e; font-family:monospace; font-size:12px; direction:ltr;">adam@alphoenixa:~$</span>
+        <input id="termInput" type="text" style="flex:1; background:transparent; border:none; outline:none; color:#e2e8f0; font-family:monospace; font-size:12px; direction:ltr; text-align:left;">
+      </div>
+    `
+  },
+  files: {
+    title: '🗂️ الملفات',
+    body: `
+      <ul style="list-style:none; padding:0; margin:0;">
+        <li style="padding:8px; border-bottom:1px solid #232b45;">📁 المستندات</li>
+        <li style="padding:8px; border-bottom:1px solid #232b45;">📁 الصور</li>
+        <li style="padding:8px; border-bottom:1px solid #232b45;">📁 التنزيلات</li>
+        <li style="padding:8px; border-bottom:1px solid #232b45;">📄 ترحيب.txt</li>
+      </ul>
+      <p style="color:#94a3b8; font-size:12px; margin-top:10px;">هذا عارض ملفات وهمي للعرض فقط، لا يقرأ ملفات حقيقية من جهازك.</p>
+    `
+  },
+  settings: {
+    title: '⚙️ الإعدادات',
+    body: `
+      <label style="display:block; margin-bottom:10px;">لون خلفية سطح المكتب:</label>
+      <div style="display:flex; gap:10px; margin-bottom:20px;">
+        <button onclick="setWallpaper('radial-gradient(circle at 30% 20%, #5c0f2a, #0b0f1a 70%)')" style="width:36px; height:36px; border-radius:8px; border:none; background:#5c0f2a; cursor:pointer;"></button>
+        <button onclick="setWallpaper('radial-gradient(circle at 30% 20%, #2b1055, #0b0f1a 70%)')" style="width:36px; height:36px; border-radius:8px; border:none; background:#2b1055; cursor:pointer;"></button>
+        <button onclick="setWallpaper('radial-gradient(circle at 30% 20%, #0f3d3e, #0b0f1a 70%)')" style="width:36px; height:36px; border-radius:8px; border:none; background:#0f3d3e; cursor:pointer;"></button>
+        <button onclick="setWallpaper('radial-gradient(circle at 30% 20%, #5c1a1a, #0b0f1a 70%)')" style="width:36px; height:36px; border-radius:8px; border:none; background:#5c1a1a; cursor:pointer;"></button>
+        <button onclick="setWallpaper('radial-gradient(circle at 30% 20%, #1a2c5c, #0b0f1a 70%)')" style="width:36px; height:36px; border-radius:8px; border:none; background:#1a2c5c; cursor:pointer;"></button>
+      </div>
+
+      <label style="display:block; margin-bottom:10px; font-weight:700;">🐧 معلومات النظام (Linux)</label>
+      <div style="background:#0f172a; border-radius:8px; padding:12px; font-family:monospace; font-size:11px; color:#94a3b8; line-height:1.8;">
+        <div><span style="color:#22c55e;">OS:</span> ALphoenixa OS 1.0 LTS</div>
+        <div><span style="color:#22c55e;">Kernel:</span> 6.8.0-simulated</div>
+        <div><span style="color:#22c55e;">Base:</span> Debian GNU/Linux</div>
+        <div><span style="color:#22c55e;">Package Manager:</span> APT (simulated)</div>
+        <div><span style="color:#22c55e;">Shell:</span> bash (simulated)</div>
+        <div><span style="color:#22c55e;">Desktop Env:</span> ALphoenixa Desktop</div>
+        <div><span style="color:#22c55e;">User:</span> adam</div>
+      </div>
+      <p style="color:#64748b; font-size:11px; margin-top:8px;">هذه معلومات وهمية للعرض فقط، ما تعكس نظام تشغيل جهازك الفعلي.</p>
+    `
+  },
+  browser: {
+    title: 'Firefox',
+    body: `
+      <div style="margin:-16px -16px 0; background:#2b2a33;">
+        <div style="display:flex; align-items:flex-end; gap:2px; padding:8px 8px 0;">
+          <div style="background:#42414d; color:#fff; font-size:11px; padding:8px 16px; border-radius:8px 8px 0 0; display:flex; align-items:center; gap:8px; max-width:180px;">
+            <svg width="12" height="12" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="#ff9500"/></svg>
+            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">علامة تبويب جديدة</span>
+          </div>
+        </div>
+        <div style="background:#42414d; padding:8px; display:flex; align-items:center; gap:8px;">
+          <span style="color:#cbd5e1; font-size:14px; cursor:pointer;">◀</span>
+          <span style="color:#cbd5e1; font-size:14px; cursor:pointer;">▶</span>
+          <span style="color:#cbd5e1; font-size:13px; cursor:pointer;" onclick="loadBrowserPage('browserUrl','browserContent')">⟳</span>
+          <div style="flex:1; background:#1c1b22; border-radius:16px; padding:7px 12px; display:flex; align-items:center; gap:8px;">
+            <span style="color:#4ade80; font-size:12px;">🔒</span>
+            <input id="browserUrl" type="text" value="about:home" style="flex:1; background:transparent; border:none; outline:none; color:#e2e8f0; direction:ltr; text-align:left; font-size:12px;">
+          </div>
+          <span style="color:#cbd5e1; font-size:13px; cursor:pointer;">☆</span>
+        </div>
+      </div>
+      <div id="browserContent" style="background:#fff; color:#1a1a1a; border-radius:0 0 8px 8px; padding:20px; min-height:160px; margin:0 -16px -16px;">
+        <h3 style="margin-top:0;">مرحباً بك في Firefox</h3>
+        <p style="color:#555; font-size:12px;">هذا متصفح Firefox وهمي للعرض فقط داخل ALphoenixa OS. جرّب تكتب عنوان واضغط Enter أو ⟳.</p>
+      </div>
+    `
+  },
+  brave: {
+    title: 'Brave',
+    body: `
+      <div style="margin:-16px -16px 0; background:#25242b;">
+        <div style="display:flex; align-items:flex-end; gap:2px; padding:8px 8px 0;">
+          <div style="background:#3a3841; color:#fff; font-size:11px; padding:8px 16px; border-radius:8px 8px 0 0; display:flex; align-items:center; gap:8px; max-width:180px;">
+            <svg width="12" height="12" viewBox="0 0 100 100"><path d="M50 6 L86 20 L80 62 L50 94 L20 62 L14 20 Z" fill="#fb542b"/></svg>
+            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">علامة تبويب جديدة</span>
+          </div>
+        </div>
+        <div style="background:#3a3841; padding:8px; display:flex; align-items:center; gap:8px;">
+          <span style="color:#cbd5e1; font-size:14px; cursor:pointer;">◀</span>
+          <span style="color:#cbd5e1; font-size:14px; cursor:pointer;">▶</span>
+          <span style="color:#cbd5e1; font-size:13px; cursor:pointer;" onclick="loadBrowserPage('braveUrl','braveContent')">⟳</span>
+          <div style="flex:1; background:#1c1b22; border-radius:16px; padding:7px 12px; display:flex; align-items:center; gap:8px;">
+            <span style="color:#4ade80; font-size:12px;">🔒</span>
+            <input id="braveUrl" type="text" value="brave://newtab" style="flex:1; background:transparent; border:none; outline:none; color:#e2e8f0; direction:ltr; text-align:left; font-size:12px;">
+          </div>
+          <span style="color:#fb542b; font-size:13px;" title="حجب المتتبعات مفعل">🛡️</span>
+        </div>
+      </div>
+      <div id="braveContent" style="background:#fff; color:#1a1a1a; border-radius:0 0 8px 8px; padding:20px; min-height:160px; margin:0 -16px -16px;">
+        <h3 style="margin-top:0;">مرحباً بك في Brave</h3>
+        <p style="color:#555; font-size:12px;">هذا متصفح Brave وهمي (يركز على الخصوصية وحجب الإعلانات). جرّب تكتب عنوان واضغط Enter أو ⟳.</p>
+      </div>
+    `
+  }
+};
+
+const fakeSites = {
+  google: { icon: '🔍', title: 'Google (وهمي)', body: `
+    <div style="text-align:center; padding:20px 0;">
+      <div style="font-size:28px; font-weight:700; margin-bottom:14px;">
+        <span style="color:#4285F4;">G</span><span style="color:#EA4335;">o</span><span style="color:#FBBC05;">o</span><span style="color:#4285F4;">g</span><span style="color:#34A853;">l</span><span style="color:#EA4335;">e</span>
+      </div>
+      <input placeholder="بحث وهمي..." style="width:70%; padding:10px 16px; border-radius:20px; border:1px solid #334155; background:#0f172a; color:#e2e8f0;">
+    </div>` },
+  youtube: { icon: '▶️', title: 'YouTube (وهمي)', body: `
+    <div style="color:#ff0000; font-weight:700; font-size:20px; margin-bottom:10px;">▶ YouTube</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+      <div style="background:#0f172a; border-radius:8px; height:60px; display:flex; align-items:center; justify-content:center; color:#64748b; font-size:11px;">فيديو وهمي 1</div>
+      <div style="background:#0f172a; border-radius:8px; height:60px; display:flex; align-items:center; justify-content:center; color:#64748b; font-size:11px;">فيديو وهمي 2</div>
+    </div>` },
+  wikipedia: { icon: '📖', title: 'ويكيبيديا (وهمي)', body: `
+    <h3 style="margin-top:0; font-family:serif;">ويكيبيديا، الموسوعة الحرة</h3>
+    <p style="color:#94a3b8; font-size:12px;">هذه محاكاة بسيطة لصفحة ويكيبيديا. المحتوى هنا وهمي بالكامل وليس مأخوذاً من الموقع الحقيقي.</p>` },
+  github: { icon: '🐙', title: 'GitHub (وهمي)', body: `
+    <div style="font-weight:700; font-size:18px; margin-bottom:10px;">🐙 GitHub</div>
+    <div style="background:#0f172a; border-radius:8px; padding:12px; font-family:monospace; font-size:12px; color:#22c55e;">$ git clone your-project.git</div>` }
+};
+
+/* ===== زر الإنترنت (اتصال/قطع وهمي) ===== */
+let internetOn = true;
+function toggleInternet() {
+  internetOn = !internetOn;
+  const btn = document.getElementById('netBtn');
+  if (internetOn) {
+    btn.textContent = '📶';
+    btn.style.color = '#22c55e';
+    btn.title = 'الإنترنت متصل';
+  } else {
+    btn.textContent = '🚫';
+    btn.style.color = '#ef4444';
+    btn.title = 'الإنترنت مقطوع';
+  }
+}
+
+/* ===== زر VPN (وهمي) — يظهر أنك متصل عبر ألمانيا ===== */
+let vpnOn = false;
+function toggleVPN() {
+  vpnOn = !vpnOn;
+  const btn = document.getElementById('vpnBtn');
+  if (vpnOn) {
+    btn.textContent = '🇩🇪';
+    btn.style.color = '#22c55e';
+    btn.title = 'VPN متصل — الموقع الظاهر: ألمانيا (Frankfurt)';
+  } else {
+    btn.textContent = '🔓';
+    btn.style.color = '#94a3b8';
+    btn.title = 'VPN غير متصل';
+  }
+}
+
+function loadBrowserPage(urlId, contentId) {
+  urlId = urlId || 'browserUrl';
+  contentId = contentId || 'browserContent';
+  const rawUrl = document.getElementById(urlId).value.trim();
+  const content = document.getElementById(contentId);
+  if (!rawUrl) { content.innerHTML = `<h3 style="margin-top:0;">صفحة فارغة</h3>`; return; }
+
+  if (!internetOn) {
+    content.innerHTML = `<h3 style="margin-top:0; color:#ef4444;">⚠️ تعذّر الاتصال</h3><p style="color:#555; font-size:12px;">لا يوجد اتصال بالإنترنت حالياً. اضغط على زر 📶/🚫 في شريط المهام لتفعيل الاتصال الوهمي.</p>`;
+    return;
+  }
+
+  const vpnNote = vpnOn ? `<p style="color:#16a34a; font-size:11px;">🇩🇪 متصل عبر VPN — يظهرك النظام كأنك في ألمانيا (Frankfurt)، هويتك الحقيقية مخفية (محاكاة).</p>` : '';
+
+  const lower = rawUrl.toLowerCase();
+  const match = Object.keys(fakeSites).find(key => lower.includes(key));
+
+  if (match) {
+    const site = fakeSites[match];
+    content.innerHTML = vpnNote + `<div>${site.body}</div><p style="color:#888; font-size:11px; margin-top:14px; border-top:1px solid #eee; padding-top:8px;">${site.icon} محاكاة لموقع ${match} — لا يتصل فعلياً بالإنترنت.</p>`;
+  } else {
+    content.innerHTML = vpnNote + `<h3 style="margin-top:0;">${rawUrl}</h3><p style="color:#555; font-size:12px;">هذه صفحة وهمية تمثل "${rawUrl}" — لا يتصل فعلياً بالإنترنت. جرّب تكتب google أو youtube أو wikipedia أو github لترى محاكاة مخصصة.</p>`;
+  }
+}
+
+document.addEventListener('keyup', (e) => {
+  if (e.key !== 'Enter' || !e.target) return;
+  if (e.target.id === 'browserUrl') loadBrowserPage('browserUrl', 'browserContent');
+  if (e.target.id === 'braveUrl') loadBrowserPage('braveUrl', 'braveContent');
+});
+
+const wallpapers = [
+  'radial-gradient(circle at 30% 20%, #5c0f2a, #0b0f1a 70%)',
+  'radial-gradient(circle at 30% 20%, #2b1055, #0b0f1a 70%)',
+  'radial-gradient(circle at 30% 20%, #0f3d3e, #0b0f1a 70%)',
+  'radial-gradient(circle at 30% 20%, #1a2c5c, #0b0f1a 70%)'
+];
+
+function setWallpaper(gradient) {
+  document.getElementById('desktop').style.background = gradient;
+  try { localStorage.setItem('alphoenixa_wallpaper', gradient); } catch (e) {}
+}
+
+function randomWallpaper() {
+  const current = document.getElementById('desktop').style.background;
+  let choice;
+  do { choice = wallpapers[Math.floor(Math.random() * wallpapers.length)]; } while (choice === current && wallpapers.length > 1);
+  setWallpaper(choice);
+}
+
+function refreshDesktop() {
+  playSound('open');
+}
+
+/* استعادة الخلفية المحفوظة عند فتح الصفحة */
+(function restoreWallpaper() {
+  try {
+    const saved = localStorage.getItem('alphoenixa_wallpaper');
+    if (saved) document.getElementById('desktop').style.background = saved;
+  } catch (e) {}
+})();
+
+/* ===== أصوات النظام (مولّدة بدون ملفات صوتية خارجية) ===== */
+let audioCtx = null;
+function playSound(type) {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    const now = audioCtx.currentTime;
+    if (type === 'open') {
+      osc.frequency.setValueAtTime(440, now);
+      osc.frequency.exponentialRampToValueAtTime(880, now + 0.12);
+    } else {
+      osc.frequency.setValueAtTime(660, now);
+      osc.frequency.exponentialRampToValueAtTime(220, now + 0.14);
+    }
+    gain.gain.setValueAtTime(0.08, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+    osc.start(now);
+    osc.stop(now + 0.16);
+  } catch (e) {}
+}
+
+/* ===== قائمة الكليك اليمين ===== */
+const desktopEl = document.getElementById('desktop');
+desktopEl.addEventListener('contextmenu', (e) => {
+  if (e.target.id !== 'desktop') return; // فقط على خلفية سطح المكتب الفارغة
+  e.preventDefault();
+  const menu = document.getElementById('contextMenu');
+  menu.style.top = e.clientY + 'px';
+  menu.style.left = e.clientX + 'px';
+  menu.style.display = 'block';
+});
+function hideContextMenu() {
+  document.getElementById('contextMenu').style.display = 'none';
+}
+document.addEventListener('click', (e) => {
+  const menu = document.getElementById('contextMenu');
+  if (menu.style.display === 'block' && !menu.contains(e.target)) hideContextMenu();
+});
+
+/* ===== إدارة النوافذ ===== */
+let zTop = 100;
+const openWindows = {};
+
+function openWindow(appId) {
+  if (openWindows[appId]) {
+    bringToFront(openWindows[appId]);
+    return;
+  }
+  const data = appData[appId];
+  const win = document.createElement('div');
+  win.className = 'app-window';
+  win.style.width = '340px';
+  win.style.height = '260px';
+  win.style.top = (60 + Math.random() * 80) + 'px';
+  win.style.left = (60 + Math.random() * 120) + 'px';
+  win.style.zIndex = ++zTop;
+
+  win.innerHTML = `
+    <div class="window-titlebar">
+      <span>${data.title}</span>
+      <div class="window-controls">
+        <button class="win-btn win-min" onclick="minimizeWindow('${appId}')"></button>
+        <button class="win-btn win-close" onclick="closeWindow('${appId}')"></button>
+      </div>
+    </div>
+    <div class="window-body">${data.body}</div>
+  `;
+
+  document.getElementById('desktop').appendChild(win);
+  openWindows[appId] = win;
+  makeDraggable(win, win.querySelector('.window-titlebar'));
+  win.addEventListener('mousedown', () => bringToFront(win));
+  playSound('open');
+
+  addTaskbarButton(appId, data.title);
+
+  if (appId === 'terminal') setupTerminal(win);
+  saveOpenWindows();
+}
+
+function saveOpenWindows() {
+  try { localStorage.setItem('alphoenixa_open_windows', JSON.stringify(Object.keys(openWindows))); } catch (e) {}
+}
+
+function restoreOpenWindows() {
+  try {
+    const ids = JSON.parse(localStorage.getItem('alphoenixa_open_windows') || '[]');
+    ids.forEach(id => { if (appData[id]) openWindow(id); });
+  } catch (e) {}
+}
+
+function bringToFront(win) {
+  win.style.zIndex = ++zTop;
+}
+
+function closeWindow(appId) {
+  if (openWindows[appId]) {
+    openWindows[appId].remove();
+    delete openWindows[appId];
+    playSound('close');
+  }
+  removeTaskbarButton(appId);
+  saveOpenWindows();
+}
+
+function minimizeWindow(appId) {
+  if (openWindows[appId]) openWindows[appId].style.display = 'none';
+}
+
+function addTaskbarButton(appId, title) {
+  const bar = document.getElementById('taskbarApps');
+  const btn = document.createElement('button');
+  btn.className = 'taskbar-app';
+  btn.id = 'task-' + appId;
+  btn.textContent = title;
+  btn.onclick = () => {
+    const win = openWindows[appId];
+    if (win.style.display === 'none') { win.style.display = 'flex'; bringToFront(win); }
+    else { win.style.display = 'none'; }
+  };
+  bar.appendChild(btn);
+}
+
+function removeTaskbarButton(appId) {
+  const btn = document.getElementById('task-' + appId);
+  if (btn) btn.remove();
+}
+
+function makeDraggable(win, handle) {
+  let offsetX = 0, offsetY = 0, dragging = false;
+  handle.addEventListener('mousedown', (e) => {
+    dragging = true;
+    offsetX = e.clientX - win.offsetLeft;
+    offsetY = e.clientY - win.offsetTop;
+  });
+  document.addEventListener('mousemove', (e) => {
+    if (!dragging) return;
+    win.style.left = (e.clientX - offsetX) + 'px';
+    win.style.top = (e.clientY - offsetY) + 'px';
+  });
+  document.addEventListener('mouseup', () => dragging = false);
+}
+
+/* ===== الطرفية الوهمية ===== */
+function setupTerminal(win) {
+  const input = win.querySelector('#termInput');
+  const output = win.querySelector('#termOutput');
+  const promptLabel = win.querySelector('#termPromptLabel');
+  input.focus();
+
+  input.addEventListener('keyup', (e) => {
+    if (e.key !== 'Enter') return;
+    const cmd = input.value;
+    output.innerHTML += `\n${promptLabel.textContent} ${escapeHtml(cmd)}\n`;
+    const result = runCommand(cmd.trim());
+    if (result !== null) output.innerHTML += result + '\n';
+    promptLabel.textContent = `adam@alphoenixa:${fakeFS.cwd === '/home/adam' ? '~' : fakeFS.cwd}$`;
+    input.value = '';
+    output.scrollTop = output.scrollHeight;
+  });
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* ===== نظام ملفات وهمي بسيط لمحاكاة أوامر Linux ===== */
+const fakeFS = {
+  cwd: '/home/adam',
+  dirs: {
+    '/home/adam': ['Documents', 'Downloads', 'Pictures', 'welcome.txt'],
+    '/home/adam/Documents': [],
+    '/home/adam/Downloads': ['houseOS.html'],
+    '/home/adam/Pictures': []
+  }
+};
+
+function runCommand(cmd) {
+  if (cmd === '') return '';
+  const parts = cmd.split(' ').filter(Boolean);
+  const base = parts[0];
+  const args = parts.slice(1);
+
+  switch (base) {
+    case 'help':
+      return 'Available commands: help, about, date, clear, echo, whoami, pwd, ls, cd, mkdir, touch, cat, uname -a, neofetch, apt, sudo, history';
+    case 'about':
+      return 'ALphoenixa OS - a simulated desktop built with HTML/CSS/JS.';
+    case 'date':
+      return new Date().toString();
+    case 'clear':
+      setTimeout(() => { document.getElementById('termOutput').innerHTML = ''; }, 0);
+      return null;
+    case 'echo':
+      return args.join(' ');
+    case 'whoami':
+      return 'adam';
+    case 'pwd':
+      return fakeFS.cwd;
+    case 'ls':
+      return (fakeFS.dirs[fakeFS.cwd] || []).join('  ') || '(empty)';
+    case 'cd': {
+      if (!args[0] || args[0] === '~') { fakeFS.cwd = '/home/adam'; return ''; }
+      if (args[0] === '..') {
+        const parts2 = fakeFS.cwd.split('/');
+        parts2.pop();
+        fakeFS.cwd = parts2.join('/') || '/';
+        return '';
+      }
+      const target = fakeFS.cwd + '/' + args[0];
+      if (fakeFS.dirs[target] !== undefined) { fakeFS.cwd = target; return ''; }
+      return `bash: cd: ${args[0]}: No such file or directory`;
+    }
+    case 'mkdir':
+      if (!args[0]) return 'mkdir: missing operand';
+      fakeFS.dirs[fakeFS.cwd] = fakeFS.dirs[fakeFS.cwd] || [];
+      fakeFS.dirs[fakeFS.cwd].push(args[0]);
+      fakeFS.dirs[fakeFS.cwd + '/' + args[0]] = [];
+      return '';
+    case 'touch':
+      if (!args[0]) return 'touch: missing operand';
+      fakeFS.dirs[fakeFS.cwd] = fakeFS.dirs[fakeFS.cwd] || [];
+      fakeFS.dirs[fakeFS.cwd].push(args[0]);
+      return '';
+    case 'cat':
+      if (args[0] === 'welcome.txt') return 'Welcome to ALphoenixa OS — enjoy exploring!';
+      return args[0] ? `cat: ${args[0]}: No such file or directory` : 'cat: missing operand';
+    case 'uname':
+      return args[0] === '-a'
+        ? 'ALphoenixa 6.8.0-simulated x86_64 GNU/Linux'
+        : 'ALphoenixa';
+    case 'neofetch':
+      return `adam@alphoenixa\n---------------\nOS: ALphoenixa OS 1.0 LTS\nKernel: 6.8.0-simulated\nShell: bash (simulated)\nDE: ALphoenixa Desktop`;
+    case 'apt':
+      if (args[0] === 'update') return 'Reading package lists... Done (simulated)';
+      if (args[0] === 'install') return `Simulated install of: ${args.slice(1).join(' ') || '(no package specified)'}`;
+      return 'apt: usage: apt update | apt install <package>';
+    case 'sudo':
+      return args.length ? runCommand(args.join(' ')) : 'usage: sudo <command>';
+    default:
+      return `bash: ${base}: command not found`;
+  }
+}function downloadAppSource() {
+  const code = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+  const blob = new Blob([code], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'ALphoenixaOS.html';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+
+</body>
+</html>
