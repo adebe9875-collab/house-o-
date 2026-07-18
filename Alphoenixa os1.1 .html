@@ -115,8 +115,17 @@
 </head>
 <body>
 
+<!-- شاشة تسجيل الدخول -->
+<div id="loginScreen" style="position:fixed; inset:0; background:#0b0f1a; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:10000;">
+  <div id="loginAvatar" style="width:84px; height:84px; border-radius:50%; background:linear-gradient(135deg,#d70a53,#a80030); display:flex; align-items:center; justify-content:center; font-size:30px; font-weight:700; margin-bottom:22px;">؟</div>
+  <div style="font-size:15px; color:#94a3b8; margin-bottom:16px;">تسجيل الدخول إلى ALphoenixa OS</div>
+  <input id="loginEmail" type="email" placeholder="بريدك الإلكتروني" style="width:240px; padding:12px 14px; border-radius:10px; border:1px solid #334155; background:#161b2c; color:#e2e8f0; text-align:center; margin-bottom:12px; direction:ltr;">
+  <button id="loginBtn" style="width:240px; padding:12px; border-radius:10px; border:none; background:linear-gradient(135deg,#d70a53,#a80030); color:#fff; font-weight:700; cursor:pointer;">دخول</button>
+  <div style="font-size:11px; color:#64748b; margin-top:14px; max-width:260px; text-align:center;">يُحفظ بريدك محلياً داخل هذا المتصفح فقط (localStorage) — لا يُرسل لأي سيرفر خارجي.</div>
+</div>
+
 <!-- شاشة الإقلاع -->
-<div id="bootScreen">
+<div id="bootScreen" style="display:none;">
   <svg width="72" height="72" viewBox="0 0 100 100" style="margin-bottom:18px;">
     <defs>
       <linearGradient id="debSwirl" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -193,7 +202,10 @@
 
   <!-- قائمة ابدأ -->
   <div id="startMenu">
-    <div class="sm-header">ALphoenixa OS</div>
+    <div class="sm-header">
+      ALphoenixa OS
+      <div id="smUserEmail" style="font-size:11px; font-weight:400; opacity:0.85; margin-top:2px; direction:ltr; text-align:right;"></div>
+    </div>
     <div class="sm-item" onclick="openWindow('about'); toggleStartMenu()">🔥 عن النظام</div>
     <div class="sm-item" onclick="openWindow('terminal'); toggleStartMenu()">📟 الطرفية</div>
     <div class="sm-item" onclick="openWindow('files'); toggleStartMenu()">🗂️ الملفات</div>
@@ -216,30 +228,77 @@
 </div>
 
 <script>
+/* ===== شاشة تسجيل الدخول ===== */
+function initials(email) {
+  const name = email.split('@')[0] || '?';
+  return name.slice(0, 2).toUpperCase();
+}
+
+function proceedToBoot() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('bootScreen').style.display = 'flex';
+  document.getElementById('bootScreen').style.opacity = '1';
+  const savedEmail = localStorage.getItem('alphoenixa_user_email');
+  const smEmail = document.getElementById('smUserEmail');
+  if (smEmail && savedEmail) smEmail.textContent = savedEmail;
+  startBoot();
+}
+
+(function checkLogin() {
+  const savedEmail = localStorage.getItem('alphoenixa_user_email');
+  if (savedEmail) {
+    proceedToBoot();
+  }
+})();
+
+document.getElementById('loginBtn').addEventListener('click', () => {
+  const emailInput = document.getElementById('loginEmail');
+  const email = emailInput.value.trim();
+  if (!email || !email.includes('@')) {
+    emailInput.style.border = '1px solid #ef4444';
+    return;
+  }
+  localStorage.setItem('alphoenixa_user_email', email);
+  proceedToBoot();
+});
+
+document.getElementById('loginEmail').addEventListener('input', (e) => {
+  const val = e.target.value.trim();
+  document.getElementById('loginAvatar').textContent = val.includes('@') ? initials(val) : '؟';
+  e.target.style.border = '1px solid #334155';
+});
+
+document.getElementById('loginEmail').addEventListener('keyup', (e) => {
+  if (e.key === 'Enter') document.getElementById('loginBtn').click();
+});
+
 /* ===== محاكاة الإقلاع ===== */
 let progress = 0;
 const fill = document.getElementById('bootBarFill');
 const label = document.getElementById('bootLabel');
 const messages = ['جارٍ تحميل النواة...', 'جارٍ تهيئة الذاكرة...', 'جارٍ تحميل واجهة سطح المكتب...', 'على وشك الانتهاء...'];
 
-const bootInterval = setInterval(() => {
-  progress += Math.random() * 18 + 8;
-  if (progress >= 100) {
-    progress = 100;
-    clearInterval(bootInterval);
-    setTimeout(() => {
-      document.getElementById('bootScreen').style.opacity = '0';
+function startBoot() {
+  progress = 0;
+  const bootInterval = setInterval(() => {
+    progress += Math.random() * 18 + 8;
+    if (progress >= 100) {
+      progress = 100;
+      clearInterval(bootInterval);
       setTimeout(() => {
-        document.getElementById('bootScreen').style.display = 'none';
-        document.getElementById('desktop').style.display = 'block';
-        startClock();
-        restoreOpenWindows();
-      }, 600);
-    }, 400);
-  }
-  fill.style.width = progress + '%';
-  label.textContent = messages[Math.min(Math.floor(progress / 26), messages.length - 1)];
-}, 350);
+        document.getElementById('bootScreen').style.opacity = '0';
+        setTimeout(() => {
+          document.getElementById('bootScreen').style.display = 'none';
+          document.getElementById('desktop').style.display = 'block';
+          startClock();
+          restoreOpenWindows();
+        }, 600);
+      }, 400);
+    }
+    fill.style.width = progress + '%';
+    label.textContent = messages[Math.min(Math.floor(progress / 26), messages.length - 1)];
+  }, 350);
+}
 
 /* ===== الساعة ===== */
 function startClock() {
