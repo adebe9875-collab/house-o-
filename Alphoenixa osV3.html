@@ -32,6 +32,7 @@
     position: fixed; inset: 0;
     background: radial-gradient(circle at 30% 20%, #5c0f2a, #0b0f1a 70%);
     display: none; overflow: hidden;
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M3 2 L3 20 L8 16 L11 22 L14 20.5 L11 14.5 L18 14 Z" fill="white" stroke="black" stroke-width="1.2" stroke-linejoin="round"/></svg>') 3 2, auto;
   }
 
   .desktop-icon {
@@ -75,6 +76,7 @@
     display: flex; align-items: center; padding: 0 14px; gap: 10px;
     border-top: 1px solid #2a3350; z-index: 500;
   }
+  #taskbar.pos-top { top: 0; bottom: auto; border-top: none; border-bottom: 1px solid #2a3350; }
   #startBtn {
     background: linear-gradient(135deg, #d70a53, #a80030); border: none; color: #fff;
     font-weight: 700; padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 13px;
@@ -92,6 +94,7 @@
     background: #161b2c; border: 1px solid #2a3350; border-radius: 12px;
     box-shadow: 0 20px 50px rgba(0,0,0,0.5); display: none; z-index: 600; overflow: hidden;
   }
+  #startMenu.pos-top { top: 60px; bottom: auto; }
   #startMenu .sm-header {
     padding: 14px; background: linear-gradient(135deg, #d70a53, #a80030);
     color: #fff; font-weight: 700; font-size: 14px;
@@ -197,10 +200,17 @@
 
   <!-- شريط المهام -->
   <div id="taskbar">
-    <button id="startBtn" onclick="toggleStartMenu()">ابدأ</button>
+    <button id="startBtn" onclick="toggleStartMenu()" style="display:flex; align-items:center; gap:6px;">
+      <svg width="16" height="16" viewBox="0 0 100 100" style="flex-shrink:0;">
+        <path d="M50 8 C72 8 88 26 88 48 C88 66 74 80 58 82 C68 74 74 62 74 50 C74 32 60 20 44 20 C28 20 16 32 16 48 C16 62 26 74 40 78 C22 76 8 60 8 42 C8 23 27 8 50 8 Z" fill="#fff"/>
+        <circle cx="50" cy="48" r="9" fill="#d70a53"/>
+      </svg>
+      ابدأ
+    </button>
     <div id="taskbarApps"></div>
     <button id="netBtn" title="الإنترنت متصل" onclick="toggleInternet()" style="background:#1f2740; border:none; color:#22c55e; width:36px; height:36px; border-radius:8px; cursor:pointer; font-size:15px;">📶</button>
     <button id="vpnBtn" title="VPN غير متصل" onclick="toggleVPN()" style="background:#1f2740; border:none; color:#94a3b8; width:36px; height:36px; border-radius:8px; cursor:pointer; font-size:15px;">🔓</button>
+    <button id="fullscreenBtn" title="ملء الشاشة" onclick="toggleFullscreen()" style="background:#1f2740; border:none; color:#94a3b8; width:36px; height:36px; border-radius:8px; cursor:pointer; font-size:15px;">⛶</button>
     <div id="clock">00:00</div>
   </div>
 
@@ -216,12 +226,17 @@
         <div id="smUserEmail" style="font-size:11px; font-weight:400; opacity:0.85; margin-top:2px; direction:ltr; text-align:right;"></div>
       </div>
     </div>
-    <div class="sm-item" onclick="openWindow('about'); toggleStartMenu()">🔥 عن النظام</div>
-    <div class="sm-item" onclick="openWindow('terminal'); toggleStartMenu()">📟 الطرفية</div>
-    <div class="sm-item" onclick="openWindow('files'); toggleStartMenu()">🗂️ الملفات</div>
-    <div class="sm-item" onclick="openWindow('settings'); toggleStartMenu()">⚙️ الإعدادات</div>
-    <div class="sm-item" onclick="openWindow('browser'); toggleStartMenu()">🌐 Firefox</div>
-    <div class="sm-item" onclick="openWindow('brave'); toggleStartMenu()">🛡️ Brave</div>
+    <div style="padding:8px;">
+      <input id="appSearch" type="text" placeholder="🔍 بحث عن تطبيق (Apps)..." oninput="filterApps()" style="width:100%; padding:8px 10px; border-radius:8px; border:1px solid #334155; background:#0f172a; color:#e2e8f0; font-size:12px; text-align:right;">
+    </div>
+    <div id="smAppsList">
+      <div class="sm-item" data-appname="عن النظام about" onclick="openWindow('about'); toggleStartMenu()">🔥 عن النظام</div>
+      <div class="sm-item" data-appname="الطرفية terminal" onclick="openWindow('terminal'); toggleStartMenu()">📟 الطرفية</div>
+      <div class="sm-item" data-appname="الملفات files" onclick="openWindow('files'); toggleStartMenu()">🗂️ الملفات</div>
+      <div class="sm-item" data-appname="الإعدادات settings" onclick="openWindow('settings'); toggleStartMenu()">⚙️ الإعدادات</div>
+      <div class="sm-item" data-appname="firefox متصفح" onclick="openWindow('browser'); toggleStartMenu()">🌐 Firefox</div>
+      <div class="sm-item" data-appname="brave متصفح" onclick="openWindow('brave'); toggleStartMenu()">🛡️ Brave</div>
+    </div>
     <div class="ctx-sep"></div>
     <div class="sm-item" onclick="downloadAppSource(); toggleStartMenu()">⬇️ تحميل كود التطبيق</div>
     <div class="ctx-sep"></div>
@@ -347,7 +362,21 @@ function startClock() {
 /* ===== قائمة ابدأ ===== */
 function toggleStartMenu() {
   const menu = document.getElementById('startMenu');
-  menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+  const opening = menu.style.display !== 'block';
+  menu.style.display = opening ? 'block' : 'none';
+  if (opening) {
+    const search = document.getElementById('appSearch');
+    search.value = '';
+    filterApps();
+    setTimeout(() => search.focus(), 50);
+  }
+}
+function filterApps() {
+  const query = document.getElementById('appSearch').value.trim().toLowerCase();
+  document.querySelectorAll('#smAppsList .sm-item').forEach(item => {
+    const name = item.getAttribute('data-appname') || '';
+    item.style.display = name.includes(query) ? 'flex' : 'none';
+  });
 }
 document.addEventListener('click', (e) => {
   const menu = document.getElementById('startMenu');
@@ -399,6 +428,12 @@ Type "help" for a list of commands.
         <button onclick="setWallpaper('radial-gradient(circle at 30% 20%, #0f3d3e, #0b0f1a 70%)')" style="width:36px; height:36px; border-radius:8px; border:none; background:#0f3d3e; cursor:pointer;"></button>
         <button onclick="setWallpaper('radial-gradient(circle at 30% 20%, #5c1a1a, #0b0f1a 70%)')" style="width:36px; height:36px; border-radius:8px; border:none; background:#5c1a1a; cursor:pointer;"></button>
         <button onclick="setWallpaper('radial-gradient(circle at 30% 20%, #1a2c5c, #0b0f1a 70%)')" style="width:36px; height:36px; border-radius:8px; border:none; background:#1a2c5c; cursor:pointer;"></button>
+      </div>
+
+      <label style="display:block; margin-bottom:10px;">مكان شريط المهام:</label>
+      <div style="display:flex; gap:10px; margin-bottom:20px;">
+        <button onclick="setTaskbarPosition('bottom')" style="padding:8px 16px; border-radius:8px; border:1px solid #334155; background:#0f172a; color:#e2e8f0; cursor:pointer; font-size:12px;">⬇️ أسفل</button>
+        <button onclick="setTaskbarPosition('top')" style="padding:8px 16px; border-radius:8px; border:1px solid #334155; background:#0f172a; color:#e2e8f0; cursor:pointer; font-size:12px;">⬆️ أعلى</button>
       </div>
 
       <label style="display:block; margin-bottom:10px; font-weight:700;">🐧 معلومات النظام (Linux)</label>
@@ -567,6 +602,26 @@ function setWallpaper(gradient) {
   try { localStorage.setItem('alphoenixa_wallpaper', gradient); } catch (e) {}
 }
 
+function setTaskbarPosition(pos) {
+  const taskbar = document.getElementById('taskbar');
+  const startMenu = document.getElementById('startMenu');
+  if (pos === 'top') {
+    taskbar.classList.add('pos-top');
+    startMenu.classList.add('pos-top');
+  } else {
+    taskbar.classList.remove('pos-top');
+    startMenu.classList.remove('pos-top');
+  }
+  try { localStorage.setItem('alphoenixa_taskbar_pos', pos); } catch (e) {}
+}
+
+(function restoreTaskbarPosition() {
+  try {
+    const pos = localStorage.getItem('alphoenixa_taskbar_pos');
+    if (pos === 'top') setTaskbarPosition('top');
+  } catch (e) {}
+})();
+
 function randomWallpaper() {
   const current = document.getElementById('desktop').style.background;
   let choice;
@@ -713,10 +768,13 @@ function toggleMaximize(appId) {
     win.dataset.prevLeft = win.style.left;
     win.dataset.prevWidth = win.style.width;
     win.dataset.prevHeight = win.style.height;
+
+    const desktop = document.getElementById('desktop');
+    const taskbarHeight = document.getElementById('taskbar').offsetHeight;
     win.style.top = '0px';
     win.style.left = '0px';
-    win.style.width = '100%';
-    win.style.height = 'calc(100% - 54px)';
+    win.style.width = desktop.clientWidth + 'px';
+    win.style.height = (desktop.clientHeight - taskbarHeight) + 'px';
     win.dataset.maximized = 'true';
   }
   bringToFront(win);
@@ -882,6 +940,13 @@ function shutdownSystem() {
       localStorage.removeItem('alphoenixa_user_name');
     }, 600);
   }, 1200);
+}
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  } else {
+    document.exitFullscreen().catch(() => {});
+  }
 }
 </script>
 
