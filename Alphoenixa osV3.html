@@ -56,12 +56,14 @@
     background: #1f2740; padding: 10px 14px; display: flex; align-items: center;
     justify-content: space-between; cursor: move; color: #e2e8f0; font-size: 13px; font-weight: 600;
   }
-  .window-controls { display: flex; gap: 8px; }
+  .window-controls { display: flex; gap: 8px; align-items: center; }
   .win-btn {
     width: 14px; height: 14px; border-radius: 50%; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 8px; color: rgba(0,0,0,0.55); line-height: 1;
   }
   .win-close { background: #ef4444; }
   .win-min { background: #f59e0b; }
+  .win-max { background: #22c55e; }
   .window-body {
     flex: 1; padding: 16px; color: #e2e8f0; font-size: 13px; overflow-y: auto; text-align: right;
   }
@@ -204,9 +206,15 @@
 
   <!-- قائمة ابدأ -->
   <div id="startMenu">
-    <div class="sm-header">
-      ALphoenixa OS
-      <div id="smUserEmail" style="font-size:11px; font-weight:400; opacity:0.85; margin-top:2px; direction:ltr; text-align:right;"></div>
+    <div class="sm-header" style="display:flex; align-items:center; gap:10px;">
+      <svg width="26" height="26" viewBox="0 0 100 100" style="flex-shrink:0;">
+        <path d="M50 8 C72 8 88 26 88 48 C88 66 74 80 58 82 C68 74 74 62 74 50 C74 32 60 20 44 20 C28 20 16 32 16 48 C16 62 26 74 40 78 C22 76 8 60 8 42 C8 23 27 8 50 8 Z" fill="#fff" opacity="0.9"/>
+        <circle cx="50" cy="48" r="9" fill="#d70a53"/>
+      </svg>
+      <div>
+        ALphoenixa OS
+        <div id="smUserEmail" style="font-size:11px; font-weight:400; opacity:0.85; margin-top:2px; direction:ltr; text-align:right;"></div>
+      </div>
     </div>
     <div class="sm-item" onclick="openWindow('about'); toggleStartMenu()">🔥 عن النظام</div>
     <div class="sm-item" onclick="openWindow('terminal'); toggleStartMenu()">📟 الطرفية</div>
@@ -216,6 +224,8 @@
     <div class="sm-item" onclick="openWindow('brave'); toggleStartMenu()">🛡️ Brave</div>
     <div class="ctx-sep"></div>
     <div class="sm-item" onclick="downloadAppSource(); toggleStartMenu()">⬇️ تحميل كود التطبيق</div>
+    <div class="ctx-sep"></div>
+    <div class="sm-item" onclick="shutdownSystem()" style="color:#ef4444;">⏻ إيقاف التشغيل</div>
   </div>
 
   <!-- قائمة الكليك اليمين -->
@@ -230,6 +240,35 @@
 </div>
 
 <script>
+/* ===== محاكاة الإقلاع (يجب تعريفها قبل استخدامها في تسجيل الدخول) ===== */
+let progress = 0;
+const messages = ['جارٍ تحميل النواة...', 'جارٍ تهيئة الذاكرة...', 'جارٍ تحميل واجهة سطح المكتب...', 'على وشك الانتهاء...'];
+
+function startBoot() {
+  progress = 0;
+  const fill = document.getElementById('bootBarFill');
+  const label = document.getElementById('bootLabel');
+  fill.style.width = '0%';
+  const bootInterval = setInterval(() => {
+    progress += Math.random() * 22 + 14;
+    if (progress >= 100) {
+      progress = 100;
+      clearInterval(bootInterval);
+      setTimeout(() => {
+        document.getElementById('bootScreen').style.opacity = '0';
+        setTimeout(() => {
+          document.getElementById('bootScreen').style.display = 'none';
+          document.getElementById('desktop').style.display = 'block';
+          startClock();
+          restoreOpenWindows();
+        }, 600);
+      }, 400);
+    }
+    fill.style.width = progress + '%';
+    label.textContent = messages[Math.min(Math.floor(progress / 26), messages.length - 1)];
+  }, 220);
+}
+
 /* ===== شاشة تسجيل الدخول ===== */
 function initials(nameOrEmail) {
   const base = nameOrEmail.split('@')[0] || '?';
@@ -293,34 +332,6 @@ document.getElementById('loginEmail').addEventListener('input', (e) => {
     if (e.key === 'Enter') document.getElementById('loginBtn').click();
   });
 });
-
-/* ===== محاكاة الإقلاع ===== */
-let progress = 0;
-const fill = document.getElementById('bootBarFill');
-const label = document.getElementById('bootLabel');
-const messages = ['جارٍ تحميل النواة...', 'جارٍ تهيئة الذاكرة...', 'جارٍ تحميل واجهة سطح المكتب...', 'على وشك الانتهاء...'];
-
-function startBoot() {
-  progress = 0;
-  const bootInterval = setInterval(() => {
-    progress += Math.random() * 18 + 8;
-    if (progress >= 100) {
-      progress = 100;
-      clearInterval(bootInterval);
-      setTimeout(() => {
-        document.getElementById('bootScreen').style.opacity = '0';
-        setTimeout(() => {
-          document.getElementById('bootScreen').style.display = 'none';
-          document.getElementById('desktop').style.display = 'block';
-          startClock();
-          restoreOpenWindows();
-        }, 600);
-      }, 400);
-    }
-    fill.style.width = progress + '%';
-    label.textContent = messages[Math.min(Math.floor(progress / 26), messages.length - 1)];
-  }, 350);
-}
 
 /* ===== الساعة ===== */
 function startClock() {
@@ -639,8 +650,9 @@ function openWindow(appId) {
     <div class="window-titlebar">
       <span>${data.title}</span>
       <div class="window-controls">
-        <button class="win-btn win-min" onclick="minimizeWindow('${appId}')"></button>
-        <button class="win-btn win-close" onclick="closeWindow('${appId}')"></button>
+        <button class="win-btn win-min" title="تصغير" onclick="minimizeWindow('${appId}')">−</button>
+        <button class="win-btn win-max" title="تكبير/استعادة" onclick="toggleMaximize('${appId}')">▢</button>
+        <button class="win-btn win-close" title="إغلاق" onclick="closeWindow('${appId}')">✕</button>
       </div>
     </div>
     <div class="window-body">${data.body}</div>
@@ -685,6 +697,29 @@ function closeWindow(appId) {
 
 function minimizeWindow(appId) {
   if (openWindows[appId]) openWindows[appId].style.display = 'none';
+}
+
+function toggleMaximize(appId) {
+  const win = openWindows[appId];
+  if (!win) return;
+  if (win.dataset.maximized === 'true') {
+    win.style.top = win.dataset.prevTop;
+    win.style.left = win.dataset.prevLeft;
+    win.style.width = win.dataset.prevWidth;
+    win.style.height = win.dataset.prevHeight;
+    win.dataset.maximized = 'false';
+  } else {
+    win.dataset.prevTop = win.style.top;
+    win.dataset.prevLeft = win.style.left;
+    win.dataset.prevWidth = win.style.width;
+    win.dataset.prevHeight = win.style.height;
+    win.style.top = '0px';
+    win.style.left = '0px';
+    win.style.width = '100%';
+    win.style.height = 'calc(100% - 54px)';
+    win.dataset.maximized = 'true';
+  }
+  bringToFront(win);
 }
 
 function addTaskbarButton(appId, title) {
@@ -829,6 +864,24 @@ function runCommand(cmd) {
   a.download = 'ALphoenixaOS.html';
   a.click();
   URL.revokeObjectURL(url);
+}
+function shutdownSystem() {
+  playSound('close');
+  document.getElementById('desktop').style.display = 'none';
+  const boot = document.getElementById('bootScreen');
+  boot.style.display = 'flex';
+  boot.style.opacity = '1';
+  document.getElementById('bootLabel').textContent = 'جارٍ إيقاف التشغيل...';
+  document.getElementById('bootBarFill').style.width = '100%';
+  setTimeout(() => {
+    boot.style.opacity = '0';
+    setTimeout(() => {
+      boot.style.display = 'none';
+      document.getElementById('loginScreen').style.display = 'flex';
+      localStorage.removeItem('alphoenixa_user_email');
+      localStorage.removeItem('alphoenixa_user_name');
+    }, 600);
+  }, 1200);
 }
 </script>
 
