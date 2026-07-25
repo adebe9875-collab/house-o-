@@ -315,8 +315,10 @@ function proceedToBoot() {
   const smEmail = document.getElementById('smUserEmail');
   if (smEmail) smEmail.textContent = (savedName ? savedName + ' — ' : '') + (savedEmail || '') + (isPremiumUnlocked() ? ' ⭐' : '');
   
-  // تحديث بيانات النظام بالاسم المسجل
-  appData.settings.body = getSettingsBody();
+  // تحديث الإعدادات ديناميكياً بحساب المستخدم
+  if (appData && appData.settings) {
+    appData.settings.body = getSettingsBody();
+  }
   startBoot();
 }
 
@@ -398,18 +400,35 @@ function startClock() {
   setInterval(tick, 1000);
 }
 
-/* ===== قائمة ابدأ ===== */
+/* ===== قائمة ابدأ والقوائم المنبثقة ===== */
 function toggleStartMenu() {
   const menu = document.getElementById('startMenu');
   menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
 }
+
 document.addEventListener('click', (e) => {
   const menu = document.getElementById('startMenu');
   const btn = document.getElementById('startBtn');
-  if (menu.style.display === 'block' && !menu.contains(e.target) && e.target !== btn) {
+  if (menu.style.display === 'block' && !menu.contains(e.target) && !btn.contains(e.target)) {
     menu.style.display = 'none';
   }
+  const ctx = document.getElementById('contextMenu');
+  if (ctx.style.display === 'block' && !ctx.contains(e.target)) {
+    ctx.style.display = 'none';
+  }
 });
+
+document.getElementById('desktop').addEventListener('contextmenu', (e) => {
+  e.preventDefault();
+  const ctx = document.getElementById('contextMenu');
+  ctx.style.left = e.clientX + 'px';
+  ctx.style.top = e.clientY + 'px';
+  ctx.style.display = 'block';
+});
+
+function hideContextMenu() {
+  document.getElementById('contextMenu').style.display = 'none';
+}
 
 function getSettingsBody() {
   const userName = getUserName();
