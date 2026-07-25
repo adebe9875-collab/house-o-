@@ -201,16 +201,6 @@
     Brave
   </div>
 
-  <div class="desktop-icon" style="top:420px; right:240px;" onclick="openWindow('tor')">
-    <div class="icon-glyph" style="background:#4a2f66; font-size:22px;">🧅</div>
-    Tor
-  </div>
-
-  <div class="desktop-icon" style="top:520px; right:20px;" onclick="openWindow('games')">
-    <div class="icon-glyph" style="background:#0f3d3e; font-size:22px;">🎮</div>
-    الألعاب
-  </div>
-
   <!-- شريط المهام -->
   <div id="taskbar">
     <button id="startBtn" onclick="toggleStartMenu()" style="display:flex; align-items:center; gap:6px;">
@@ -246,8 +236,6 @@
       <div class="sm-item" data-appname="الإعدادات settings" onclick="openWindow('settings'); toggleStartMenu()">⚙️ الإعدادات</div>
       <div class="sm-item" data-appname="firefox متصفح" onclick="openWindow('browser'); toggleStartMenu()">🌐 Firefox</div>
       <div class="sm-item" data-appname="brave متصفح" onclick="openWindow('brave'); toggleStartMenu()">🛡️ Brave</div>
-      <div class="sm-item" data-appname="tor متصفح مجهول" onclick="openWindow('tor'); toggleStartMenu()">🧅 Tor Browser</div>
-      <div class="sm-item" data-appname="الألعاب games xo" onclick="openWindow('games'); toggleStartMenu()">🎮 الألعاب</div>
     </div>
     <div class="ctx-sep"></div>
     <div class="sm-item" onclick="downloadAppSource(); toggleStartMenu()">⬇️ تحميل كود التطبيق</div>
@@ -562,40 +550,6 @@ Type "help" for a list of commands.
         <p style="color:#555; font-size:12px;">هذا متصفح Brave وهمي (يركز على الخصوصية وحجب الإعلانات). جرّب تكتب عنوان واضغط Enter أو ⟳.</p>
       </div>
     `
-  },
-  tor: {
-    title: 'Tor Browser',
-    body: `
-      <div style="margin:-16px -16px 0; background:#2b1a3d;">
-        <div style="display:flex; align-items:flex-end; gap:2px; padding:8px 8px 0;">
-          <div style="background:#4a2f66; color:#fff; font-size:11px; padding:8px 16px; border-radius:8px 8px 0 0; display:flex; align-items:center; gap:8px; max-width:180px;">
-            <span style="font-size:12px;">🧅</span>
-            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">علامة تبويب جديدة</span>
-          </div>
-        </div>
-        <div style="background:#4a2f66; padding:8px; display:flex; align-items:center; gap:8px;">
-          <span style="color:#cbd5e1; font-size:14px; cursor:pointer;">◀</span>
-          <span style="color:#cbd5e1; font-size:14px; cursor:pointer;">▶</span>
-          <span style="color:#cbd5e1; font-size:13px; cursor:pointer;" onclick="loadBrowserPage('torUrl','torContent')">⟳</span>
-          <div style="flex:1; background:#1c1220; border-radius:16px; padding:7px 12px; display:flex; align-items:center; gap:8px;">
-            <span style="color:#a78bfa; font-size:12px;">🧅</span>
-            <input id="torUrl" type="text" value="about:tor" style="flex:1; background:transparent; border:none; outline:none; color:#e2e8f0; direction:ltr; text-align:left; font-size:12px;">
-          </div>
-        </div>
-      </div>
-      <div id="torContent" style="background:#1c1220; color:#e2e8f0; border-radius:0 0 8px 8px; padding:20px; min-height:160px; margin:0 -16px -16px;">
-        <h3 style="margin-top:0;">🧅 مرحباً بك في Tor</h3>
-        <p style="color:#a78bfa; font-size:12px;">متصفح Tor وهمي (تصفح مجهول عبر عدة طبقات تشفير). محاكاة فقط — ما يتصل فعلياً بشبكة Tor الحقيقية.</p>
-      </div>
-    `
-  },
-  games: {
-    title: '🎮 الألعاب',
-    body: `
-      <div id="gameBoard" style="display:grid; grid-template-columns:repeat(3,60px); grid-template-rows:repeat(3,60px); gap:6px; justify-content:center; margin-bottom:12px;"></div>
-      <div id="gameStatus" style="text-align:center; font-size:13px; margin-bottom:10px;">دورك: X</div>
-      <button onclick="resetGame()" style="display:block; margin:0 auto; padding:8px 16px; border-radius:6px; border:none; background:#d70a53; color:#fff; cursor:pointer; font-size:12px;">لعبة جديدة (XO)</button>
-    `
   }
 };
 
@@ -824,7 +778,6 @@ function openWindow(appId) {
   addTaskbarButton(appId, data.title);
 
   if (appId === 'terminal') setupTerminal(win);
-  if (appId === 'games') resetGame();
   saveOpenWindows();
 }
 
@@ -1052,52 +1005,7 @@ function toggleFullscreen() {
     document.exitFullscreen().catch(() => {});
   }
 }
-/* ===== لعبة XO بسيطة ===== */
-let gameCells = Array(9).fill('');
-let gameTurn = 'X';
-let gameOver = false;
-
-function resetGame() {
-  gameCells = Array(9).fill('');
-  gameTurn = 'X';
-  gameOver = false;
-  const board = document.getElementById('gameBoard');
-  if (!board) return;
-  board.innerHTML = '';
-  for (let i = 0; i < 9; i++) {
-    const cell = document.createElement('button');
-    cell.style.cssText = 'width:60px; height:60px; font-size:24px; font-weight:700; background:#0f172a; border:1px solid #334155; border-radius:8px; color:#e2e8f0; cursor:pointer;';
-    cell.addEventListener('click', () => playGameCell(i, cell));
-    board.appendChild(cell);
-  }
-  const status = document.getElementById('gameStatus');
-  if (status) status.textContent = 'دورك: X';
-}
-
-function playGameCell(i, cellEl) {
-  if (gameOver || gameCells[i]) return;
-  gameCells[i] = gameTurn;
-  cellEl.textContent = gameTurn;
-  cellEl.style.color = gameTurn === 'X' ? '#d70a53' : '#22c55e';
-
-  const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-  const won = wins.some(([a,b,c]) => gameCells[a] && gameCells[a] === gameCells[b] && gameCells[b] === gameCells[c]);
-
-  const status = document.getElementById('gameStatus');
-  if (won) {
-    gameOver = true;
-    if (status) status.textContent = `🎉 ${gameTurn} فاز!`;
-    return;
-  }
-  if (gameCells.every(c => c)) {
-    gameOver = true;
-    if (status) status.textContent = 'تعادل!';
-    return;
-  }
-  gameTurn = gameTurn === 'X' ? 'O' : 'X';
-  if (status) status.textContent = 'دورك: ' + gameTurn;
-}
 </script>
 
 </body>
-</html>
+       </html>
