@@ -136,6 +136,7 @@
     <button class="nav-link" onclick="showView('compare', this)">مقارنة الأنظمة</button>
     <button class="nav-link" onclick="showView('source', this)">الكود المصدري</button>
     <button class="nav-link" onclick="showView('verify', this)">التحقق من سلامة الأيزو</button>
+    <button class="nav-link" onclick="showView('keys', this)">مفاتيح</button>
   </nav>
 </header>
 
@@ -407,6 +408,19 @@
         SHA256: <span id="sha256Value">جارٍ الحساب...</span>
       </div>
       <pre id="sourceCodeBox" style="background:#0f172a; border-radius:10px; padding:16px; max-height:380px; overflow:auto; direction:ltr; text-align:left; font-size:11px; line-height:1.6; color:#94a3b8; white-space:pre-wrap; word-break:break-word;"></pre>
+    </div>
+
+    <!-- خانة عرض مفاتيح ALphoenixa OS -->
+    <div class="view" id="view-keys">
+      <h2>مفاتيح</h2>
+      <p style="text-align:right; color:#94a3b8; font-size:13px; margin-top:-6px;">مفاتيح التشغيل الخاصة بمشروع ALphoenixa OS:</p>
+      <div style="background:#0f172a; border-radius:10px; padding:16px; direction:ltr; text-align:left; font-family:monospace; font-size:13px; color:#22c55e; line-height:2;">
+        ALPHX-2026-M9QK-TZRW<br>
+        ALPHX-2026-P4LC-GXVN<br>
+        ALPHX-2026-B7DF-YKMS<br>
+        ALPHX-2026-U2HT-JWCQ<br>
+        ALPHX-2026-E5NX-RLPB
+      </div>
     </div>
 
     <!-- الواجهة الخامسة: التحقق من سلامة الأيزو -->
