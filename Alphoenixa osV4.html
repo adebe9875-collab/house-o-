@@ -130,6 +130,7 @@
   <input id="loginCountry" type="text" placeholder="بلدك (اختياري)" style="width:240px; padding:12px 14px; border-radius:10px; border:1px solid #334155; background:#161b2c; color:#e2e8f0; text-align:center; margin-bottom:10px; direction:ltr;">
   <input id="loginProductKey" type="text" placeholder="مفتاح المنتج (اختياري)" style="width:240px; padding:12px 14px; border-radius:10px; border:1px solid #334155; background:#161b2c; color:#e2e8f0; text-align:center; margin-bottom:6px; direction:ltr;">
   <div id="loginKeyNote" style="font-size:11px; color:#64748b; margin-bottom:10px; max-width:260px; text-align:center;">بدون مفتاح منتج صحيح، بعض المزايا (مثل Brave وVPN) تبقى مقفلة.</div>
+  <div id="loginError" style="font-size:12px; color:#ef4444; margin-bottom:8px; min-height:14px; text-align:center;"></div>
   <button id="loginBtn" style="width:240px; padding:12px; border-radius:10px; border:none; background:linear-gradient(135deg,#d70a53,#a80030); color:#fff; font-weight:700; cursor:pointer;">دخول</button>
   <div style="font-size:11px; color:#64748b; margin-top:14px; max-width:260px; text-align:center;">تُحفظ بياناتك محلياً داخل هذا المتصفح فقط (localStorage) — لا تُرسل لأي سيرفر خارجي.</div>
 </div>
@@ -201,6 +202,16 @@
     Brave
   </div>
 
+  <div class="desktop-icon" style="top:420px; right:240px;" onclick="openWindow('tor')">
+    <div class="icon-glyph" style="background:#4a2f66; font-size:22px;">🧅</div>
+    Tor
+  </div>
+
+  <div class="desktop-icon" style="top:520px; right:20px;" onclick="openWindow('games')">
+    <div class="icon-glyph" style="background:#0f3d3e; font-size:22px;">🎮</div>
+    الألعاب
+  </div>
+
   <!-- شريط المهام -->
   <div id="taskbar">
     <button id="startBtn" onclick="toggleStartMenu()" style="display:flex; align-items:center; gap:6px;">
@@ -236,6 +247,8 @@
       <div class="sm-item" data-appname="الإعدادات settings" onclick="openWindow('settings'); toggleStartMenu()">⚙️ الإعدادات</div>
       <div class="sm-item" data-appname="firefox متصفح" onclick="openWindow('browser'); toggleStartMenu()">🌐 Firefox</div>
       <div class="sm-item" data-appname="brave متصفح" onclick="openWindow('brave'); toggleStartMenu()">🛡️ Brave</div>
+      <div class="sm-item" data-appname="tor متصفح مجهول" onclick="openWindow('tor'); toggleStartMenu()">🧅 Tor Browser</div>
+      <div class="sm-item" data-appname="الألعاب games xo" onclick="openWindow('games'); toggleStartMenu()">🎮 الألعاب</div>
     </div>
     <div class="ctx-sep"></div>
     <div class="sm-item" onclick="downloadAppSource(); toggleStartMenu()">⬇️ تحميل كود التطبيق</div>
@@ -265,7 +278,7 @@ function startBoot() {
   const label = document.getElementById('bootLabel');
   fill.style.width = '0%';
   const bootInterval = setInterval(() => {
-    progress += Math.random() * 22 + 14;
+    progress += Math.random() * 28 + 22;
     if (progress >= 100) {
       progress = 100;
       clearInterval(bootInterval);
@@ -276,12 +289,12 @@ function startBoot() {
           document.getElementById('desktop').style.display = 'block';
           startClock();
           restoreOpenWindows();
-        }, 600);
-      }, 400);
+        }, 350);
+      }, 200);
     }
     fill.style.width = progress + '%';
     label.textContent = messages[Math.min(Math.floor(progress / 26), messages.length - 1)];
-  }, 220);
+  }, 140);
 }
 
 /* ===== شاشة تسجيل الدخول ===== */
@@ -301,6 +314,31 @@ const acceptedActivationKeys = [
 
 function isPremiumUnlocked() {
   return localStorage.getItem('alphoenixa_premium') === 'true';
+}
+
+function updateSettingsActivationStatus() {
+  const statusEl = document.getElementById('settingsActivationStatus');
+  if (!statusEl) return;
+  if (isPremiumUnlocked()) {
+    statusEl.textContent = '⭐ النظام مفعّل — كل المزايا مفتوحة (Brave, VPN).';
+    statusEl.style.color = '#22c55e';
+  } else {
+    statusEl.textContent = '🔒 غير مفعّل حالياً — Brave وVPN مقفلة. اكتب كود صحيح بالأسفل لتفعيلها.';
+    statusEl.style.color = '#f59e0b';
+  }
+}
+
+function activateFromSettings() {
+  const input = document.getElementById('settingsActivationInput');
+  const code = input.value.trim().toUpperCase();
+  if (acceptedActivationKeys.includes(code)) {
+    localStorage.setItem('alphoenixa_premium', 'true');
+    input.value = '';
+    input.style.border = '1px solid #334155';
+  } else {
+    input.style.border = '1px solid #ef4444';
+  }
+  updateSettingsActivationStatus();
 }
 
 function proceedToBoot() {
@@ -327,27 +365,39 @@ document.getElementById('loginBtn').addEventListener('click', () => {
   const passwordInput = document.getElementById('loginPassword');
   const countryInput = document.getElementById('loginCountry');
   const keyInput = document.getElementById('loginProductKey');
+  const errorBox = document.getElementById('loginError');
   const name = nameInput.value.trim();
   const email = emailInput.value.trim();
   const password = passwordInput.value;
   const country = countryInput.value.trim();
   const productKey = keyInput.value.trim().toUpperCase();
 
-  if (!name) { nameInput.style.border = '1px solid #ef4444'; return; }
-  if (!email || !email.includes('@')) { emailInput.style.border = '1px solid #ef4444'; return; }
-  if (!password) { passwordInput.style.border = '1px solid #ef4444'; return; }
+  errorBox.textContent = '';
+
+  if (!name) {
+    nameInput.style.border = '1px solid #ef4444';
+    errorBox.textContent = 'من فضلك اكتب اسمك.';
+    return;
+  }
+  if (!email || !email.includes('@')) {
+    emailInput.style.border = '1px solid #ef4444';
+    errorBox.textContent = 'من فضلك اكتب بريد إلكتروني صحيح.';
+    return;
+  }
 
   localStorage.setItem('alphoenixa_user_name', name);
   localStorage.setItem('alphoenixa_user_email', email);
   if (country) localStorage.setItem('alphoenixa_user_country', country);
+  if (password) localStorage.setItem('alphoenixa_user_password_set', 'true');
 
   if (productKey) {
     if (acceptedActivationKeys.includes(productKey)) {
       localStorage.setItem('alphoenixa_premium', 'true');
     } else {
-      document.getElementById('loginKeyNote').textContent = '❌ مفتاح المنتج غير صحيح — يمكنك المتابعة بدون المزايا الإضافية أو تصحيح المفتاح.';
+      document.getElementById('loginKeyNote').textContent = '❌ مفتاح المنتج غير صحيح — امسحه للمتابعة بدون المزايا الإضافية أو صحّحه.';
       document.getElementById('loginKeyNote').style.color = '#ef4444';
       keyInput.style.border = '1px solid #ef4444';
+      errorBox.textContent = 'مفتاح المنتج غير صحيح.';
       return;
     }
   }
@@ -484,6 +534,15 @@ Type "help" for a list of commands.
         ✓ النظام محدّث بالكامل (محاكاة)
       </div>
 
+      <label style="display:block; margin-bottom:10px; font-weight:700;">🔑 كود التفعيل (Activation Code)</label>
+      <div style="background:#0f172a; border-radius:8px; padding:12px; margin-bottom:16px;">
+        <div id="settingsActivationStatus" style="font-size:12px; margin-bottom:8px; color:#94a3b8;">جارٍ التحقق من الحالة...</div>
+        <div style="display:flex; gap:6px;">
+          <input id="settingsActivationInput" type="text" placeholder="اكتب كود التفعيل هنا..." style="flex:1; padding:8px 10px; border-radius:6px; border:1px solid #334155; background:#161b2c; color:#e2e8f0; font-size:12px; direction:ltr; text-align:left;">
+          <button onclick="activateFromSettings()" style="padding:8px 16px; border-radius:6px; border:none; background:#d70a53; color:#fff; cursor:pointer; font-size:12px;">تفعيل</button>
+        </div>
+      </div>
+
       <label style="display:block; margin-bottom:10px; font-weight:700;">🐧 معلومات النظام (Linux)</label>
       <div style="background:#0f172a; border-radius:8px; padding:12px; font-family:monospace; font-size:11px; color:#94a3b8; line-height:1.8;">
         <div><span style="color:#22c55e;">OS:</span> ALphoenixa OS 1.0 LTS</div>
@@ -549,6 +608,40 @@ Type "help" for a list of commands.
         <h3 style="margin-top:0;">مرحباً بك في Brave</h3>
         <p style="color:#555; font-size:12px;">هذا متصفح Brave وهمي (يركز على الخصوصية وحجب الإعلانات). جرّب تكتب عنوان واضغط Enter أو ⟳.</p>
       </div>
+    `
+  },
+  tor: {
+    title: 'Tor Browser',
+    body: `
+      <div style="margin:-16px -16px 0; background:#2b1a3d;">
+        <div style="display:flex; align-items:flex-end; gap:2px; padding:8px 8px 0;">
+          <div style="background:#4a2f66; color:#fff; font-size:11px; padding:8px 16px; border-radius:8px 8px 0 0; display:flex; align-items:center; gap:8px; max-width:180px;">
+            <span style="font-size:12px;">🧅</span>
+            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">علامة تبويب جديدة</span>
+          </div>
+        </div>
+        <div style="background:#4a2f66; padding:8px; display:flex; align-items:center; gap:8px;">
+          <span style="color:#cbd5e1; font-size:14px; cursor:pointer;">◀</span>
+          <span style="color:#cbd5e1; font-size:14px; cursor:pointer;">▶</span>
+          <span style="color:#cbd5e1; font-size:13px; cursor:pointer;" onclick="loadBrowserPage('torUrl','torContent')">⟳</span>
+          <div style="flex:1; background:#1c1220; border-radius:16px; padding:7px 12px; display:flex; align-items:center; gap:8px;">
+            <span style="color:#a78bfa; font-size:12px;">🧅</span>
+            <input id="torUrl" type="text" value="about:tor" style="flex:1; background:transparent; border:none; outline:none; color:#e2e8f0; direction:ltr; text-align:left; font-size:12px;">
+          </div>
+        </div>
+      </div>
+      <div id="torContent" style="background:#1c1220; color:#e2e8f0; border-radius:0 0 8px 8px; padding:20px; min-height:160px; margin:0 -16px -16px;">
+        <h3 style="margin-top:0;">🧅 مرحباً بك في Tor</h3>
+        <p style="color:#a78bfa; font-size:12px;">متصفح Tor وهمي (تصفح مجهول عبر عدة طبقات تشفير). محاكاة فقط — ما يتصل فعلياً بشبكة Tor الحقيقية.</p>
+      </div>
+    `
+  },
+  games: {
+    title: '🎮 الألعاب',
+    body: `
+      <div id="gameBoard" style="display:grid; grid-template-columns:repeat(3,60px); grid-template-rows:repeat(3,60px); gap:6px; justify-content:center; margin-bottom:12px;"></div>
+      <div id="gameStatus" style="text-align:center; font-size:13px; margin-bottom:10px;">دورك: X</div>
+      <button onclick="resetGame()" style="display:block; margin:0 auto; padding:8px 16px; border-radius:6px; border:none; background:#d70a53; color:#fff; cursor:pointer; font-size:12px;">لعبة جديدة (XO)</button>
     `
   }
 };
@@ -778,6 +871,8 @@ function openWindow(appId) {
   addTaskbarButton(appId, data.title);
 
   if (appId === 'terminal') setupTerminal(win);
+  if (appId === 'games') resetGame();
+  if (appId === 'settings') updateSettingsActivationStatus();
   saveOpenWindows();
 }
 
@@ -1004,6 +1099,51 @@ function toggleFullscreen() {
   } else {
     document.exitFullscreen().catch(() => {});
   }
+}
+/* ===== لعبة XO بسيطة ===== */
+let gameCells = Array(9).fill('');
+let gameTurn = 'X';
+let gameOver = false;
+
+function resetGame() {
+  gameCells = Array(9).fill('');
+  gameTurn = 'X';
+  gameOver = false;
+  const board = document.getElementById('gameBoard');
+  if (!board) return;
+  board.innerHTML = '';
+  for (let i = 0; i < 9; i++) {
+    const cell = document.createElement('button');
+    cell.style.cssText = 'width:60px; height:60px; font-size:24px; font-weight:700; background:#0f172a; border:1px solid #334155; border-radius:8px; color:#e2e8f0; cursor:pointer;';
+    cell.addEventListener('click', () => playGameCell(i, cell));
+    board.appendChild(cell);
+  }
+  const status = document.getElementById('gameStatus');
+  if (status) status.textContent = 'دورك: X';
+}
+
+function playGameCell(i, cellEl) {
+  if (gameOver || gameCells[i]) return;
+  gameCells[i] = gameTurn;
+  cellEl.textContent = gameTurn;
+  cellEl.style.color = gameTurn === 'X' ? '#d70a53' : '#22c55e';
+
+  const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  const won = wins.some(([a,b,c]) => gameCells[a] && gameCells[a] === gameCells[b] && gameCells[b] === gameCells[c]);
+
+  const status = document.getElementById('gameStatus');
+  if (won) {
+    gameOver = true;
+    if (status) status.textContent = `🎉 ${gameTurn} فاز!`;
+    return;
+  }
+  if (gameCells.every(c => c)) {
+    gameOver = true;
+    if (status) status.textContent = 'تعادل!';
+    return;
+  }
+  gameTurn = gameTurn === 'X' ? 'O' : 'X';
+  if (status) status.textContent = 'دورك: ' + gameTurn;
 }
 </script>
 
