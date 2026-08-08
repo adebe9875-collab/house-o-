@@ -28,73 +28,72 @@
   #bootLabel { margin-top: 14px; font-size: 12px; color: #94a3b8; }
 
   /* ===== سطح المكتب ===== */
+  /* ===== GNOME-style Desktop ===== */
   #desktop {
     position: fixed; inset: 0;
-    background: radial-gradient(circle at 30% 20%, #5c0f2a, #0b0f1a 70%);
+    background: #1e1e2e url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><defs><radialGradient id="g" cx="30%" cy="20%"><stop offset="0%" stop-color="%23313244"/><stop offset="100%" stop-color="%231e1e2e"/></radialGradient></defs><rect width="400" height="400" fill="url(%23g)"/></svg>');
+    background-size: cover;
     display: none; overflow: hidden;
-    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M3 2 L3 20 L8 16 L11 22 L14 20.5 L11 14.5 L18 14 Z" fill="white" stroke="black" stroke-width="1.2" stroke-linejoin="round"/></svg>') 3 2, auto;
   }
 
-  .desktop-icon {
-    position: absolute; width: 84px; text-align: center; color: #fff;
-    cursor: pointer; padding: 8px 4px; border-radius: 8px; font-size: 12px;
-  }
-  .desktop-icon:hover { background: rgba(255,255,255,0.08); }
-  .desktop-icon .icon-glyph {
-    width: 46px; height: 46px; margin: 0 auto 6px; border-radius: 12px;
-    display: flex; align-items: center; justify-content: center; font-size: 22px;
-    box-shadow: 0 6px 14px rgba(0,0,0,0.35);
-  }
+  /* أيقونات سطح المكتب — مخفية في GNOME عادةً */
+  .desktop-icon { display: none; }
 
-  /* ===== النوافذ ===== */
+  /* ===== نوافذ GNOME ===== */
   .app-window {
-    position: absolute; min-width: 300px; min-height: 200px;
-    background: #161b2c; border-radius: 12px; overflow: hidden;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid #2a3350;
+    position: absolute; min-width: 340px; min-height: 220px;
+    background: #313244; border-radius: 14px; overflow: hidden;
+    box-shadow: 0 30px 70px rgba(0,0,0,0.7); border: 1px solid #45475a;
     display: flex; flex-direction: column;
   }
   .window-titlebar {
-    background: #1f2740; padding: 10px 14px; display: flex; align-items: center;
-    justify-content: space-between; cursor: move; color: #e2e8f0; font-size: 13px; font-weight: 600;
+    background: #1e1e2e; padding: 10px 14px; display: flex; align-items: center;
+    justify-content: space-between; cursor: move; color: #cdd6f4; font-size: 13px; font-weight: 600;
+    border-bottom: 1px solid #45475a;
   }
   .window-controls { display: flex; gap: 8px; align-items: center; }
   .win-btn {
     width: 14px; height: 14px; border-radius: 50%; border: none; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; font-size: 8px; color: rgba(0,0,0,0.55); line-height: 1;
+    display: flex; align-items: center; justify-content: center; font-size: 8px; color: rgba(0,0,0,0.6); line-height: 1;
   }
-  .win-close { background: #ef4444; }
-  .win-min { background: #f59e0b; }
-  .win-max { background: #22c55e; }
+  .win-close { background: #f38ba8; }
+  .win-min { background: #f9e2af; }
+  .win-max { background: #a6e3a1; }
   .window-body {
-    flex: 1; padding: 16px; color: #e2e8f0; font-size: 13px; overflow-y: auto; text-align: right;
+    flex: 1; padding: 16px; color: #cdd6f4; font-size: 13px; overflow-y: auto; text-align: right;
+    background: #313244;
   }
 
-  /* ===== شريط المهام ===== */
+  /* ===== GNOME Top Bar ===== */
   #taskbar {
-    position: absolute; bottom: 0; left: 0; right: 0; height: 54px;
-    background: rgba(15,20,35,0.85); backdrop-filter: blur(10px);
-    display: flex; align-items: center; padding: 0 14px; gap: 10px;
-    border-top: 1px solid #2a3350; z-index: 500;
+    position: absolute; top: 0; left: 0; right: 0; height: 42px;
+    background: rgba(17,17,27,0.92); backdrop-filter: blur(20px);
+    display: flex; align-items: center; padding: 0 16px; gap: 10px;
+    border-bottom: 1px solid #45475a; z-index: 500;
   }
-  #taskbar.pos-top { top: 0; bottom: auto; border-top: none; border-bottom: 1px solid #2a3350; }
+  #taskbar.pos-top { top: 0; bottom: auto; }
   #startBtn {
-    background: linear-gradient(135deg, #d70a53, #a80030); border: none; color: #fff;
-    font-weight: 700; padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 13px;
+    background: transparent; border: none; color: #cdd6f4;
+    font-weight: 700; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px;
+    transition: background .15s;
   }
-  #taskbarApps { display: flex; gap: 6px; flex: 1; }
+  #startBtn:hover { background: rgba(255,255,255,0.1); }
+  #taskbarApps { display: flex; gap: 4px; flex: 1; }
   .taskbar-app {
-    background: #1f2740; color: #cbd5e1; border: none; padding: 6px 12px; border-radius: 6px;
-    font-size: 12px; cursor: pointer;
+    background: rgba(255,255,255,0.08); color: #cdd6f4; border: none; padding: 4px 12px;
+    border-radius: 6px; font-size: 12px; cursor: pointer;
   }
-  #clock { color: #cbd5e1; font-size: 13px; direction: ltr; }
+  #clock { color: #cdd6f4; font-size: 13px; direction: ltr; font-weight: 600; }
 
-  /* ===== قائمة ابدأ ===== */
+  /* ===== GNOME Activities Menu ===== */
   #startMenu {
-    position: absolute; bottom: 60px; right: 14px; width: 240px;
-    background: #161b2c; border: 1px solid #2a3350; border-radius: 12px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5); display: none; z-index: 600; overflow: hidden;
+    position: absolute; top: 48px; left: 50%; transform: translateX(-50%); width: 520px;
+    background: rgba(30,30,46,0.97); border: 1px solid #45475a; border-radius: 16px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6); display: none; z-index: 600; overflow: hidden;
+    backdrop-filter: blur(20px);
   }
-  #startMenu.pos-top { top: 60px; bottom: auto; }
+  #startMenu.pos-top { top: 48px; bottom: auto; }
+
   #startMenu .sm-header {
     padding: 14px; background: linear-gradient(135deg, #d70a53, #a80030);
     color: #fff; font-weight: 700; font-size: 14px;
@@ -155,105 +154,92 @@
 <!-- سطح المكتب -->
 <div id="desktop">
 
-  <div class="desktop-icon" style="top:20px; right:20px;" onclick="openWindow('about')">
-    <div class="icon-glyph" style="background:linear-gradient(135deg,#d70a53,#a80030);">🔥</div>
-    عن النظام
-  </div>
-
-  <div class="desktop-icon" style="top:120px; right:20px;" onclick="openWindow('terminal')">
-    <div class="icon-glyph" style="background:#0f172a; border:1px solid #334155;">📟</div>
-    الطرفية
-  </div>
-
-  <div class="desktop-icon" style="top:220px; right:20px;" onclick="openWindow('files')">
-    <div class="icon-glyph" style="background:#2563eb;">🗂️</div>
-    الملفات
-  </div>
-
-  <div class="desktop-icon" style="top:320px; right:20px;" onclick="openWindow('settings')">
-    <div class="icon-glyph" style="background:#475569;">⚙️</div>
-    الإعدادات
-  </div>
-
-  <div class="desktop-icon" style="top:420px; right:20px;" onclick="openWindow('browser')">
-    <div class="icon-glyph" style="background:transparent; box-shadow:none;">
-      <svg width="46" height="46" viewBox="0 0 100 100">
-        <defs>
-          <radialGradient id="fxGrad1" cx="35%" cy="30%" r="75%">
-            <stop offset="0%" stop-color="#ffcc4d"/>
-            <stop offset="45%" stop-color="#ff9500"/>
-            <stop offset="100%" stop-color="#d6301f"/>
-          </radialGradient>
-        </defs>
-        <circle cx="50" cy="50" r="46" fill="url(#fxGrad1)"/>
-        <path d="M50 20 C35 22 25 38 28 55 C30 68 40 78 50 80 C60 78 70 68 72 55 C75 38 65 22 50 20 Z" fill="#7c3aed" opacity="0.75"/>
-        <circle cx="50" cy="52" r="16" fill="#0b0f1a"/>
-        <circle cx="44" cy="49" r="3" fill="#fff"/>
-        <circle cx="56" cy="49" r="3" fill="#fff"/>
-      </svg>
+  <!-- GNOME Top Bar -->
+  <div id="taskbar" style="display:grid; grid-template-columns:1fr auto 1fr; align-items:center; padding:0 12px;">
+    <!-- يسار: زر Activities -->
+    <div style="display:flex; align-items:center; gap:6px;">
+      <button id="startBtn" onclick="toggleStartMenu()" style="display:flex; align-items:center; gap:6px; background:transparent; border:none; color:#cdd6f4; font-weight:700; padding:4px 12px; border-radius:6px; cursor:pointer; font-size:13px; transition:background .15s;">
+        Activities
+      </button>
+      <div id="taskbarApps" style="display:flex; gap:4px;"></div>
     </div>
-    Firefox
-  </div>
 
-  <div class="desktop-icon" style="top:420px; right:130px;" onclick="openWindow('brave')">
-    <div class="icon-glyph" style="background:#25242b;">
-      <svg width="26" height="26" viewBox="0 0 100 100"><path d="M50 6 L86 20 L80 62 L50 94 L20 62 L14 20 Z" fill="#fb542b"/></svg>
+    <!-- وسط: الساعة والتاريخ -->
+    <div style="text-align:center; cursor:default;">
+      <div id="clock" style="color:#cdd6f4; font-size:13px; font-weight:600; direction:ltr;"></div>
+      <div id="dateBar" style="color:#a6adc8; font-size:11px; direction:ltr;"></div>
     </div>
-    Brave
+
+    <!-- يمين: System Tray -->
+    <div style="display:flex; align-items:center; gap:4px; justify-content:flex-end;">
+      <button id="netBtn" title="الإنترنت" onclick="toggleInternet()" style="background:transparent; border:none; color:#22c55e; padding:4px 8px; border-radius:6px; cursor:pointer; font-size:14px; transition:background .15s;">📶</button>
+      <button id="vpnBtn" title="VPN" onclick="toggleVPN()" style="background:transparent; border:none; color:#a6adc8; padding:4px 8px; border-radius:6px; cursor:pointer; font-size:14px; transition:background .15s;">🔓</button>
+      <button id="fullscreenBtn" title="ملء الشاشة" onclick="toggleFullscreen()" style="background:transparent; border:none; color:#a6adc8; padding:4px 8px; border-radius:6px; cursor:pointer; font-size:14px;">⛶</button>
+      <div style="width:1px; height:20px; background:#45475a; margin:0 4px;"></div>
+      <button onclick="shutdownSystem()" style="background:transparent; border:none; color:#a6adc8; padding:4px 8px; border-radius:6px; cursor:pointer; font-size:14px;" title="إيقاف التشغيل">⏻</button>
+    </div>
   </div>
 
-  <div class="desktop-icon" style="top:420px; right:240px;" onclick="openWindow('tor')">
-    <div class="icon-glyph" style="background:#4a2f66; font-size:22px;">🧅</div>
-    Tor
-  </div>
+  <!-- GNOME Activities Full Screen Overlay -->
+  <div id="startMenu" style="position:absolute; top:42px; left:0; right:0; bottom:0; background:rgba(18,18,28,0.96); backdrop-filter:blur(40px); display:none; z-index:600; flex-direction:column; align-items:center; justify-content:flex-start; padding:40px 20px 20px; overflow-y:auto;">
 
-  <div class="desktop-icon" style="top:520px; right:20px;" onclick="openWindow('games')">
-    <div class="icon-glyph" style="background:#0f3d3e; font-size:22px;">🎮</div>
-    الألعاب
-  </div>
+    <!-- بحث -->
+    <input id="appSearch" type="text" placeholder="🔍 ابحث عن تطبيق..." oninput="filterApps()"
+      style="width:100%; max-width:420px; padding:12px 20px; border-radius:30px; border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.07); color:#cdd6f4; font-size:14px; text-align:center; outline:none; margin-bottom:40px; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
 
-  <!-- شريط المهام -->
-  <div id="taskbar">
-    <button id="startBtn" onclick="toggleStartMenu()" style="display:flex; align-items:center; gap:6px;">
-      <svg width="16" height="16" viewBox="0 0 100 100" style="flex-shrink:0;">
-        <path d="M50 8 C72 8 88 26 88 48 C88 66 74 80 58 82 C68 74 74 62 74 50 C74 32 60 20 44 20 C28 20 16 32 16 48 C16 62 26 74 40 78 C22 76 8 60 8 42 C8 23 27 8 50 8 Z" fill="#fff"/>
-        <circle cx="50" cy="48" r="9" fill="#d70a53"/>
-      </svg>
-      ابدأ
-    </button>
-    <div id="taskbarApps"></div>
-    <button id="netBtn" title="الإنترنت متصل" onclick="toggleInternet()" style="background:#1f2740; border:none; color:#22c55e; width:36px; height:36px; border-radius:8px; cursor:pointer; font-size:15px;">📶</button>
-    <button id="vpnBtn" title="VPN غير متصل" onclick="toggleVPN()" style="background:#1f2740; border:none; color:#94a3b8; width:36px; height:36px; border-radius:8px; cursor:pointer; font-size:15px;">🔓</button>
-    <button id="fullscreenBtn" title="ملء الشاشة" onclick="toggleFullscreen()" style="background:#1f2740; border:none; color:#94a3b8; width:36px; height:36px; border-radius:8px; cursor:pointer; font-size:15px;">⛶</button>
-    <div id="clock">00:00</div>
-  </div>
+    <!-- اسم المستخدم -->
+    <div id="smUserEmail" style="font-size:12px; color:#7f849c; text-align:center; margin-top:-34px; margin-bottom:28px; direction:ltr;"></div>
 
-  <!-- قائمة ابدأ -->
-  <div id="startMenu">
-    <div class="sm-header" style="display:flex; align-items:center; gap:10px;">
-      <svg width="26" height="26" viewBox="0 0 100 100" style="flex-shrink:0;">
-        <path d="M50 8 C72 8 88 26 88 48 C88 66 74 80 58 82 C68 74 74 62 74 50 C74 32 60 20 44 20 C28 20 16 32 16 48 C16 62 26 74 40 78 C22 76 8 60 8 42 C8 23 27 8 50 8 Z" fill="#fff" opacity="0.9"/>
-        <circle cx="50" cy="48" r="9" fill="#d70a53"/>
-      </svg>
-      <div>
-        ALphoenixa OS
-        <div id="smUserEmail" style="font-size:11px; font-weight:400; opacity:0.85; margin-top:2px; direction:ltr; text-align:right;"></div>
+    <!-- شبكة التطبيقات GNOME — كبيرة وواضحة -->
+    <div id="smAppsList" style="display:grid; grid-template-columns:repeat(4,100px); gap:28px; justify-content:center; width:100%; max-width:520px;">
+
+      <div class="gnome-app" data-appname="عن النظام about" onclick="openWindow('about'); toggleStartMenu()">
+        <div class="gnome-icon" style="background:linear-gradient(135deg,#d70a53,#a80030); font-size:26px; width:64px; height:64px; border-radius:16px; display:flex; align-items:center; justify-content:center; margin:0 auto 8px; box-shadow:0 6px 20px rgba(215,10,83,0.4);">🔥</div>
+        <span style="font-size:12px; color:#cdd6f4; text-align:center; display:block;">عن النظام</span>
       </div>
+
+      <div class="gnome-app" data-appname="الطرفية terminal" onclick="openWindow('terminal'); toggleStartMenu()">
+        <div class="gnome-icon" style="background:#1e1e2e; border:1px solid #45475a; font-size:26px; width:64px; height:64px; border-radius:16px; display:flex; align-items:center; justify-content:center; margin:0 auto 8px; box-shadow:0 6px 20px rgba(0,0,0,0.4);">📟</div>
+        <span style="font-size:12px; color:#cdd6f4; text-align:center; display:block;">الطرفية</span>
+      </div>
+
+      <div class="gnome-app" data-appname="الملفات files" onclick="openWindow('files'); toggleStartMenu()">
+        <div class="gnome-icon" style="background:#1d6fa4; font-size:26px; width:64px; height:64px; border-radius:16px; display:flex; align-items:center; justify-content:center; margin:0 auto 8px; box-shadow:0 6px 20px rgba(29,111,164,0.4);">🗂️</div>
+        <span style="font-size:12px; color:#cdd6f4; text-align:center; display:block;">الملفات</span>
+      </div>
+
+      <div class="gnome-app" data-appname="الإعدادات settings" onclick="openWindow('settings'); toggleStartMenu()">
+        <div class="gnome-icon" style="background:#3d3846; font-size:26px; width:64px; height:64px; border-radius:16px; display:flex; align-items:center; justify-content:center; margin:0 auto 8px; box-shadow:0 6px 20px rgba(0,0,0,0.4);">⚙️</div>
+        <span style="font-size:12px; color:#cdd6f4; text-align:center; display:block;">الإعدادات</span>
+      </div>
+
+      <div class="gnome-app" data-appname="firefox متصفح" onclick="openWindow('browser'); toggleStartMenu()">
+        <div class="gnome-icon" style="background:radial-gradient(circle at 35% 30%,#ffcc4d,#ff9500 55%,#d6301f); font-size:26px; width:64px; height:64px; border-radius:16px; display:flex; align-items:center; justify-content:center; margin:0 auto 8px; box-shadow:0 6px 20px rgba(255,124,31,0.4);">🦊</div>
+        <span style="font-size:12px; color:#cdd6f4; text-align:center; display:block;">Firefox</span>
+      </div>
+
+      <div class="gnome-app" data-appname="brave متصفح" onclick="openWindow('brave'); toggleStartMenu()">
+        <div class="gnome-icon" style="background:#25242b; font-size:26px; width:64px; height:64px; border-radius:16px; display:flex; align-items:center; justify-content:center; margin:0 auto 8px; box-shadow:0 6px 20px rgba(251,84,43,0.3);">🛡️</div>
+        <span style="font-size:12px; color:#cdd6f4; text-align:center; display:block;">Brave</span>
+      </div>
+
+      <div class="gnome-app" data-appname="tor متصفح مجهول" onclick="openWindow('tor'); toggleStartMenu()">
+        <div class="gnome-icon" style="background:#4a2f66; font-size:26px; width:64px; height:64px; border-radius:16px; display:flex; align-items:center; justify-content:center; margin:0 auto 8px; box-shadow:0 6px 20px rgba(74,47,102,0.5);">🧅</div>
+        <span style="font-size:12px; color:#cdd6f4; text-align:center; display:block;">Tor</span>
+      </div>
+
+      <div class="gnome-app" data-appname="الألعاب games xo" onclick="openWindow('games'); toggleStartMenu()">
+        <div class="gnome-icon" style="background:#0f3d3e; font-size:26px; width:64px; height:64px; border-radius:16px; display:flex; align-items:center; justify-content:center; margin:0 auto 8px; box-shadow:0 6px 20px rgba(15,61,62,0.5);">🎮</div>
+        <span style="font-size:12px; color:#cdd6f4; text-align:center; display:block;">الألعاب</span>
+      </div>
+
     </div>
-    <div id="smAppsList">
-      <div class="sm-item" data-appname="عن النظام about" onclick="openWindow('about'); toggleStartMenu()">🔥 عن النظام</div>
-      <div class="sm-item" data-appname="الطرفية terminal" onclick="openWindow('terminal'); toggleStartMenu()">📟 الطرفية</div>
-      <div class="sm-item" data-appname="الملفات files" onclick="openWindow('files'); toggleStartMenu()">🗂️ الملفات</div>
-      <div class="sm-item" data-appname="الإعدادات settings" onclick="openWindow('settings'); toggleStartMenu()">⚙️ الإعدادات</div>
-      <div class="sm-item" data-appname="firefox متصفح" onclick="openWindow('browser'); toggleStartMenu()">🌐 Firefox</div>
-      <div class="sm-item" data-appname="brave متصفح" onclick="openWindow('brave'); toggleStartMenu()">🛡️ Brave</div>
-      <div class="sm-item" data-appname="tor متصفح مجهول" onclick="openWindow('tor'); toggleStartMenu()">🧅 Tor Browser</div>
-      <div class="sm-item" data-appname="الألعاب games xo" onclick="openWindow('games'); toggleStartMenu()">🎮 الألعاب</div>
+
+    <!-- أزرار أسفل -->
+    <div style="position:absolute; bottom:28px; display:flex; gap:16px;">
+      <button onclick="downloadAppSource(); toggleStartMenu()" style="background:rgba(49,50,68,0.7); border:1px solid #45475a; color:#cdd6f4; padding:8px 18px; border-radius:20px; cursor:pointer; font-size:12px; backdrop-filter:blur(10px);">⬇️ تحميل</button>
+      <button onclick="shutdownSystem()" style="background:rgba(243,139,168,0.15); border:1px solid #f38ba8; color:#f38ba8; padding:8px 18px; border-radius:20px; cursor:pointer; font-size:12px; backdrop-filter:blur(10px);">⏻ إيقاف</button>
     </div>
-    <div class="ctx-sep"></div>
-    <div class="sm-item" onclick="downloadAppSource(); toggleStartMenu()">⬇️ تحميل كود التطبيق</div>
-    <div class="ctx-sep"></div>
-    <div class="sm-item" onclick="shutdownSystem()" style="color:#ef4444;">⏻ إيقاف التشغيل</div>
   </div>
 
   <!-- قائمة الكليك اليمين -->
@@ -434,9 +420,11 @@ document.getElementById('loginPassword').addEventListener('input', (e) => {
 /* ===== الساعة ===== */
 function startClock() {
   const clockEl = document.getElementById('clock');
+  const dateEl = document.getElementById('dateBar');
   function tick() {
     const now = new Date();
-    clockEl.textContent = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+    clockEl.textContent = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    if (dateEl) dateEl.textContent = now.toLocaleDateString('en-GB', { weekday: 'short', month: 'short', day: 'numeric' });
   }
   tick();
   setInterval(tick, 1000);
@@ -736,10 +724,10 @@ document.addEventListener('keyup', (e) => {
 });
 
 const wallpapers = [
-  'radial-gradient(circle at 30% 20%, #5c0f2a, #0b0f1a 70%)',
-  'radial-gradient(circle at 30% 20%, #2b1055, #0b0f1a 70%)',
-  'radial-gradient(circle at 30% 20%, #0f3d3e, #0b0f1a 70%)',
-  'radial-gradient(circle at 30% 20%, #1a2c5c, #0b0f1a 70%)'
+  'radial-gradient(ellipse at 40% 60%, #241f5e 0%, #1a1a2e 40%, #0d0d1a 100%)',
+  'radial-gradient(ellipse at 30% 40%, #1e4d2b 0%, #0d1a12 60%, #000 100%)',
+  'radial-gradient(ellipse at 60% 30%, #4a1942 0%, #1a0a2e 50%, #000 100%)',
+  'radial-gradient(ellipse at 50% 50%, #1a2e4a 0%, #0d1a2e 60%, #000 100%)'
 ];
 
 function setWallpaper(gradient) {
@@ -1007,7 +995,7 @@ function runCommand(cmd) {
 
   switch (base) {
     case 'help':
-      return 'Available commands: help, about, date, clear, echo, whoami, pwd, ls, cd, mkdir, touch, cat, uname -a, neofetch, apt, sudo, history';
+      return 'Available commands: help, about, date, clear, echo, whoami, pwd, ls, cd, mkdir, touch, cat, uname -a, neofetch, apt, sudo, history, houseos';
     case 'about':
       return 'ALphoenixa OS - a simulated desktop built with HTML/CSS/JS.';
     case 'date':
@@ -1055,6 +1043,16 @@ function runCommand(cmd) {
         : 'ALphoenixa';
     case 'neofetch':
       return `adam@alphoenixa\n---------------\nOS: ALphoenixa OS 1.0 LTS\nKernel: 6.8.0-simulated\nShell: bash (simulated)\nDE: ALphoenixa Desktop`;
+    case 'houseos':
+      setTimeout(() => {
+        const w = window.open('', '_blank');
+        w.document.write('<p style="font-family:sans-serif;color:#888;">جارٍ تحميل houseOS...</p>');
+        fetch('houseos_app.html')
+          .then(r => { if(r.ok) return r.text(); throw new Error(); })
+          .then(html => { w.document.open(); w.document.write(html); w.document.close(); })
+          .catch(() => { w.document.write('<p style="font-family:sans-serif;background:#0f172a;color:#f8fafc;padding:20px;">⚠️ لم يتم العثور على ملف houseOS في نفس المجلد. ضع houseos_app.html بجانب AlphoenixaOS.html لكي يعمل هذا الأمر.</p>'); });
+      }, 100);
+      return '🏠 جارٍ فتح houseOS...';
     case 'apt':
       if (args[0] === 'update') return 'Reading package lists... Done (simulated)';
       if (args[0] === 'install') return `Simulated install of: ${args.slice(1).join(' ') || '(no package specified)'}`;
@@ -1148,4 +1146,4 @@ function playGameCell(i, cellEl) {
 </script>
 
 </body>
-       </html>
+</html>
