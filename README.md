@@ -1,6 +1,5 @@
 <div align="center">
-https://github.com/adebe9875-collab/house-o-/blob/63cf72ec917b1309af5828973b2b84b94a8b4035/1000027018.png
-# 🏠 HouseOS
+src="https://avatars.githubusercontent.com/u/304346768?v=4"# 🏠 HouseOS
 
 ### *Your Home for Operating Systems.*
 
