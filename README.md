@@ -3,7 +3,7 @@ src="https://avatars.githubusercontent.com/u/304346768?v=4"# 🏠 HouseOS
 
 ### *Your Home for Operating Systems.*
 
-<img src="assets/logo.png" width="180">
+<img src="1000027018.png" width="180">
 
 ![Version](https://img.shields.io/badge/Version-v1.0-blue?style=for-the-badge)
 ![Status](https://img.shields.io/badge/Status-Development-orange?style=for-the-badge)
