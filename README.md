@@ -1,5 +1,4 @@
-<div align="center">
-src="https://avatars.githubusercontent.com/u/304346768?v=4"# 🏠 HouseOS
+# 🏠 HouseOS
 
 ### *Your Home for Operating Systems.*
 
