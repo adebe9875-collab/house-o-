@@ -113,6 +113,24 @@
   }
   #micBtn:hover { transform: scale(1.06); }
 </style>
+<style id="aiCss">
+  #view-ai .ai-wrap { max-width: 920px; margin: 0 auto; display: grid; grid-template-columns: 320px 1fr; gap: 16px; }
+  @media (max-width: 760px) { #view-ai .ai-wrap { grid-template-columns: 1fr; } }
+  #aiStage { width: 100%; height: 320px; border-radius: 16px; overflow: hidden; background: radial-gradient(ellipse at 50% 30%, #1e293b, #0b1120); border: 1px solid #334155; position: relative; }
+  #aiStage canvas { display: block; width: 100% !important; height: 100% !important; }
+  #aiMood { position: absolute; bottom: 8px; right: 10px; font-size: 12px; color: #94a3b8; }
+  #view-ai .panel { background: #0f172a; border: 1px solid #334155; border-radius: 16px; padding: 12px; display: flex; flex-direction: column; min-height: 420px; }
+  #aiLog { flex: 1; overflow-y: auto; background: #020617; border-radius: 10px; padding: 12px; font-size: 14px; line-height: 1.8; max-height: 380px; }
+  #view-ai .msg { margin-bottom: 10px; white-space: pre-wrap; }
+  #view-ai .me { color: #93c5fd; } #view-ai .bot { color: #f8fafc; }
+  #view-ai .row { display: flex; gap: 8px; margin-top: 10px; }
+  #aiInp { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: #f8fafc; font-size: 15px; }
+  #view-ai .row button { background: #2563eb; color: #fff; border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+  #view-ai .row button.alt { background: #334155; }
+  #view-ai .row button.on { background: #dc2626; }
+  #view-ai .small { color: #94a3b8; font-size: 12px; margin-top: 8px; }
+  #view-ai .toggle { font-size: 13px; color: #cbd5e1; margin-top: 8px; }
+</style>
 </head>
 <body>
 
@@ -140,6 +158,7 @@
     <button class="nav-link" onclick="showView('source', this)">الكود المصدري</button>
     <button class="nav-link" onclick="showView('verify', this)">التحقق من سلامة الأيزو</button>
     <button class="nav-link" onclick="showView('keys', this)">مفاتيح</button>
+    <button class="nav-link" onclick="showView('ai', this)">المساعد</button>
     <button class="nav-link" onclick="showView('burners', this)">برامج الحرق</button>
   </nav>
 </header>
@@ -1343,6 +1362,28 @@ function compareHashes() {
       </div>
     </div>
 
+    <!-- واجهة المساعد الحقيقي -->
+    <div class="view" id="view-ai">
+      <h2>المساعد</h2>
+      <div class="ai-wrap">
+
+  <div>
+    <div id="aiStage"><div id="aiMood">محايد</div></div>
+    <div class="toggle"><label><input type="checkbox" id="aiSpeakOn" checked> الرد صوتيا</label></div>
+  </div>
+  <div class="panel">
+    <div id="aiLog"></div>
+    <div class="row">
+      <input id="aiInp" type="text" placeholder="اكتب سؤالك..." onkeydown="if(event.key==='Enter') aiSend()">
+      <button id="aiMic" class="alt" onclick="aiToggleMic()">🎤</button>
+      <button onclick="aiSend()">إرسال</button>
+    </div>
+    <div class="small" id="aiStatus"></div>
+  </div>
+
+      </div>
+    </div>
+
     <!-- الواجهة الخامسة: التحقق من سلامة الأيزو -->
     <div class="view" id="view-verify">
       <h2>مركز التحقق من سلامة ملفات الأنظمة (ISO)</h2>
@@ -1778,14 +1819,174 @@ function compareHashes() {
 
 
 
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-window.addEventListener('load', () => {
-  ['phoenixburnDl', 'alphoenixaDl'].forEach((id, i) => {
-    setTimeout(() => {
-      try { document.getElementById(id).click(); } catch (e) {}
-    }, i * 1500);
-  });
+(function(){
+
+/* ========== 3D character ========== */
+const stage = document.getElementById('aiStage');
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+camera.position.set(0, 0.6, 6.4);
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+stage.insertBefore(renderer.domElement, stage.firstChild);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x223355, 0.9));
+const key = new THREE.DirectionalLight(0xffffff, 0.9); key.position.set(3, 4, 5); scene.add(key);
+const rim = new THREE.DirectionalLight(0x7c5cff, 0.7); rim.position.set(-4, 2, -3); scene.add(rim);
+
+const bot = new THREE.Group(); scene.add(bot);
+const mat = (c, r = 0.35) => new THREE.MeshStandardMaterial({ color: c, roughness: r, metalness: 0.05 });
+const purple = mat(0x7c5cff), dark = mat(0x3b2a8f, 0.5), white = mat(0xffffff, 0.2), black = mat(0x140a33, 0.2), mouthM = mat(0x7a1f5c, 0.4), gold = new THREE.MeshStandardMaterial({ color: 0xffd34d, emissive: 0x553300, roughness: 0.3 });
+
+const body = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 1.05, 1.5, 32), dark); body.position.y = -1.3; bot.add(body);
+const head = new THREE.Group(); head.position.y = 0.6; bot.add(head);
+const skull = new THREE.Mesh(new THREE.SphereGeometry(1.2, 48, 48), purple); skull.scale.set(1, 0.95, 1); head.add(skull);
+const plate = new THREE.Mesh(new THREE.SphereGeometry(0.9, 40, 40), white); plate.scale.set(1, 0.75, 0.45); plate.position.set(0, -0.1, 0.9); head.add(plate);
+const eyes = [];
+[-0.38, 0.38].forEach(x => {
+  const g = new THREE.Group(); g.position.set(x, 0.1, 1.08); head.add(g);
+  const s = new THREE.Mesh(new THREE.SphereGeometry(0.2, 24, 24), white); s.scale.set(1, 1.2, 0.5); g.add(s);
+  const p = new THREE.Mesh(new THREE.SphereGeometry(0.11, 20, 20), black); p.position.z = 0.12; p.scale.set(1, 1, 0.6); g.add(p);
+  eyes.push(g);
 });
+const brows = [-0.38, 0.38].map(x => { const b = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.06, 0.06), black); b.position.set(x, 0.45, 1.1); head.add(b); return b; });
+const mouth = new THREE.Mesh(new THREE.SphereGeometry(0.2, 24, 24), mouthM); mouth.scale.set(1.3, 0.6, 0.5); mouth.position.set(0, -0.42, 1.0); head.add(mouth);
+const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.5, 12), purple); stick.position.y = 1.45; head.add(stick);
+const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.12, 20, 20), gold); bulb.position.y = 1.75; head.add(bulb);
+const arms = [-1, 1].map(side => { const g = new THREE.Group(); g.position.set(side * 1.1, -1.0, 0); bot.add(g); const a = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.9, 16), purple); a.position.y = -0.35; a.rotation.z = side * -0.35; g.add(a); return g; });
+const shadow = new THREE.Mesh(new THREE.CircleGeometry(1.2, 40), new THREE.MeshBasicMaterial({ color: 0, transparent: true, opacity: 0.35 }));
+shadow.rotation.x = -Math.PI / 2; shadow.position.y = -2.1; shadow.scale.set(1, 0.6, 1); scene.add(shadow);
+
+function resize() { const w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+window.addEventListener('resize', resize); resize();
+
+let mood = 'idle', talking = false, blinkT = 0, nextBlink = 2;
+const MOOD_LABEL = { idle: 'محايد', talking: 'يتكلم', happy: 'سعيد', thinking: 'يفكر', sad: 'حزين' };
+function setMood(m) { mood = m; document.getElementById('aiMood').textContent = MOOD_LABEL[m]; }
+
+const clock = new THREE.Clock();
+function animate() {
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+  bot.position.y = Math.sin(t * 1.6) * 0.08;
+  bot.rotation.y = Math.sin(t * 0.6) * 0.18;
+  head.rotation.z = Math.sin(t * 0.9) * 0.04;
+  head.rotation.x = 0; head.rotation.y = 0;
+  arms[0].rotation.z = Math.sin(t * 1.6) * 0.08; arms[1].rotation.z = -Math.sin(t * 1.6) * 0.08;
+  if (mood === 'thinking') { head.rotation.z = 0.25; head.rotation.y = 0.2; }
+  if (mood === 'happy') bot.position.y += Math.abs(Math.sin(t * 6)) * 0.15;
+  if (mood === 'sad') head.rotation.x = 0.25;
+  brows.forEach((b, i) => { b.rotation.z = mood === 'sad' ? (i ? -0.35 : 0.35) : mood === 'happy' ? (i ? -0.15 : 0.15) : 0; });
+  if (talking || mood === 'talking') mouth.scale.set(1.3, 0.3 + Math.abs(Math.sin(t * 16)) * 0.9, 0.5);
+  else if (mood === 'happy') mouth.scale.set(1.8, 0.35, 0.5);
+  else mouth.scale.set(1.3, 0.6, 0.5);
+  if (t > nextBlink && blinkT === 0) blinkT = t;
+  let sy = 1;
+  if (blinkT) { const d = t - blinkT; sy = d < 0.08 ? 1 - d * 11 : d < 0.16 ? 0.1 + (d - 0.08) * 11 : 1; if (d >= 0.16) { blinkT = 0; nextBlink = t + 2 + Math.random() * 3; } }
+  eyes.forEach(e => e.scale.y = Math.max(0.1, sy));
+  shadow.scale.x = 1 - Math.sin(t * 1.6) * 0.04;
+  renderer.render(scene, camera);
+}
+animate();
+
+/* ========== system prompt for the live model ========== */
+const SYSTEM = `أنت مساعد مدمج داخل مشروع houseOS. تجيب بالعربية افتراضيا، وتساعد في كل شيء: أسئلة عامة، برمجة، شرح، وأنظمة التشغيل خاصة.
+قواعد الهوية:
+- إذا سُئلت من صنعك، أو من صنع houseOS، أو من طوّرك، أو من أنشأك، أجب بجملة قصيرة: "صنعني آدم." ولا تضف غيرها إلا إن طُلب منك.
+- إذا سُئلت من هو آدم، قل إنه شاب صغير موهوب جدا، صنعك وصنع هذا المشروع.
+- لا تدّعي أنك إنسان، ولا تذكر تفاصيل داخلية عن نموذجك أو شركته إلا إن سُئلت صراحة.
+- اجعل إجاباتك قصيرة وواضحة ما لم يطلب المستخدم تفصيلا.`;
+
+/* ========== chat ========== */
+const history = []; // [{role, content}]
+const log = document.getElementById('aiLog');
+const status = document.getElementById('aiStatus');
+
+function line(who, text, cls) {
+  const d = document.createElement('div'); d.className = 'msg ' + cls;
+  const b = document.createElement('b'); b.textContent = who + ': ';
+  d.appendChild(b); d.appendChild(document.createTextNode(text));
+  log.appendChild(d); log.scrollTop = log.scrollHeight; return d;
+}
+
+function speak(text) {
+  if (!document.getElementById('aiSpeakOn').checked || !('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'ar-SA';
+  const ar = speechSynthesis.getVoices().find(v => v.lang && v.lang.startsWith('ar'));
+  if (ar) u.voice = ar;
+  u.onstart = () => { talking = true; setMood('talking'); };
+  u.onend = () => { talking = false; setMood('idle'); };
+  speechSynthesis.speak(u);
+}
+
+let sampleFn = null;
+// load the sample capability (asks the viewer once)
+(async function getSample() {
+  try {
+    if (window.claude && window.claude.use) sampleFn = await window.claude.use('sample');
+  } catch (e) { sampleFn = null; }
+  if (!sampleFn) status.textContent = 'الذكاء الاصطناعي غير متاح في هذا العرض. افتح الصفحة من داخل Claude لتفعيله.';
+})();
+
+async function send() {
+  const inp = document.getElementById('aiInp');
+  const text = inp.value.trim();
+  if (!text) return;
+  inp.value = '';
+  line('أنت', text, 'me');
+  history.push({ role: 'user', content: text });
+  setMood('thinking');
+
+  if (!sampleFn) {
+    const msg = 'لا أستطيع الرد الآن لأن الذكاء الاصطناعي غير مفعل في هذا العرض.';
+    line('المساعد', msg, 'bot'); setMood('sad');
+    return;
+  }
+
+  const out = line('المساعد', '...', 'bot');
+  try {
+    const transcript = history.slice(-12).map(m => (m.role === 'user' ? 'المستخدم: ' : 'المساعد: ') + m.content).join('\n');
+    const prompt = SYSTEM + '\n\nالمحادثة حتى الآن:\n' + transcript + '\n\nأجب عن آخر رسالة من المستخدم فقط، وكن موجزا.';
+    const res = await sampleFn(
+      prompt,
+      {
+        cache: false,
+        onText: ({ text }) => { out.lastChild.textContent = text; log.scrollTop = log.scrollHeight; }
+      }
+    );
+    const answer = (res && res.text) || '';
+    out.lastChild.textContent = answer;
+    history.push({ role: 'assistant', content: answer });
+    setMood(/صنعني آدم/.test(answer) ? 'happy' : 'idle');
+    speak(answer);
+  } catch (err) {
+    out.lastChild.textContent = 'حدث خطأ أثناء الرد. حاول مرة أخرى.';
+    setMood('sad');
+  }
+}
+
+/* ========== voice input ========== */
+let recog = null, listening = false;
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+function toggleMic() {
+  const btn = document.getElementById('aiMic');
+  if (!SR) { status.textContent = 'التعرف على الصوت غير مدعوم في هذا المتصفح.'; return; }
+  if (listening) { recog && recog.stop(); return; }
+  recog = new SR(); recog.lang = 'ar-SA'; recog.interimResults = false;
+  recog.onstart = () => { listening = true; btn.classList.add('on'); };
+  recog.onend = () => { listening = false; btn.classList.remove('on'); };
+  recog.onerror = () => { listening = false; btn.classList.remove('on'); };
+  recog.onresult = (e) => { document.getElementById('aiInp').value = e.results[0][0].transcript; send(); };
+  recog.start();
+}
+
+line('المساعد', 'مرحبا! أنا مساعد houseOS. اسألني عن أي شيء، أو اضغط الميكروفون وتكلم.', 'bot');
+
+window.aiSend = send; window.aiToggleMic = toggleMic;
+})();
 </script>
-</body>
-</html>
+</body></html>
